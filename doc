@@ -1,0 +1,8 @@
+omega: velocidade angular.
+psi: atitude (ângulo entre velocidade e o eixo X)
+
+odeint(func,y,t): resolve ode. func é a derivada (dy/dt = func), y é y(t[0]) e t é um vetor de pontos onde será resolvida a ode.
+quad(func,ini,fim): realiza integrais definidas. func é a função, ini é o limite inferior e fim o superior.
+
+-----------------------------
+conditions: Classe que armazena as condições atuais de um veículo, que são, em ordem: acc_max, tau, position = (0,0), psi = 0, speed = 0, radius = sp.inf.
