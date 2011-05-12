@@ -1,11 +1,10 @@
-import sys
-sys.path.append("/home/echobravo/Projects/YMSim/physics")
+from sys import path
+path.append("/home/echobravo/Projects/YMSim")
 from physics.physics import *
-sys.path.append("/home/echobravo/Projects/YMSim")
 from utils import *
 
 
-class Car(Physics):
+class Car(Vehicle_Dynamics):
 	def __init__(self, conditions):
 		self.conditions = []
 		self.conditions.append(conditions)

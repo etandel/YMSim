@@ -8,6 +8,8 @@ class Position:
         def __init__(self, X,Y):
                 self.X = X
                 self.Y = Y
+	def distance_to(self, position):
+		return sp.sqrt((position.X - self.X)**2 + (position.Y - self.Y)**2)
 
 
 class Condition:
@@ -23,7 +25,7 @@ class Condition:
 		self.omega = omega
 
 
-class Physics():
+class Vehicle_Dynamics():
 	def __init__(self):
 		pass
 
