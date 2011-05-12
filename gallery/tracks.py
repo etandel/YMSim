@@ -5,6 +5,8 @@ from physics.physics import Position
 from utils import get_float
 from re import match
 
+FLOAT_ERROR = "Valor invalido. Digite apenas numeros reais.  "
+
 class Track:
 	pass
 
@@ -29,7 +31,7 @@ class Curve_Track(Track):
 
 def create_straight(width, last_track):
 	psi = last_track.psi
-	length = float(raw_input("Digite o comprimento da reta de pista: "))
+	length = get_float("Digite o comprimento da reta: ", FLOAT_ERROR)
 	X = last_track.position.X + length * sp.cos(psi)
 	Y = last_track.position.Y + length * sp.sin(psi)
 	position = Position(X,Y)
@@ -37,8 +39,8 @@ def create_straight(width, last_track):
 	
 
 def create_curve(width, last_track):
-	radius = float(raw_input("Digite o raio da curva: "))
-	angle = float(raw_input("Digite o angulo do arco de curva (em radianos): "))
+	radius = get_float("Digite o raio da curva: ", FLOAT_ERROR)
+	angle = get_float("Digite o angulo do arco de curva (em radianos): ", FLOAT_ERROR)
 	psi = sp.pi - angle + last_track.psi	
 	position = Position(0,0) #calculate position
 	return Curve_Track(width, radius, angle, psi, position)
@@ -57,9 +59,9 @@ def get_next_track(width, last_track):
 
 def create_circuit():
 	circuit = []
-	width - get_float("Digite a largura do circuito: ", "Valor invalido. Digite apenas numeros reais.  ")
+	width = get_float("Digite a largura do circuito: ", FLOAT_ERROR )
 
-	psi = float(raw_input("Digite o angulo que o primeiro pedaco faz com o eixo X: "))
+	psi = get_float("Digite o angulo que o primeiro pedaco faz com o eixo X: ", FLOAT_ERROR)
 	circuit.append(Straight_Track(width, 0, psi))
 	next_track = get_next_track(width, circuit[-1])
 	while next_track:
