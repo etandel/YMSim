@@ -1,3 +1,8 @@
+{"configured": True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
+
 def copy(self, dest):
         dest.position = self.position
         dest.speed = self.speed

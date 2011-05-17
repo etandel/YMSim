@@ -1,5 +1,8 @@
+{"configured": True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
 from sys import path
-path.append("/home/echobravo/Projects/YMSim")
+path.append(PROJECT_DIR)
+
 from physics.physics import *
 from utils import *
 

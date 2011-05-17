@@ -1,5 +1,10 @@
-import scipy as sp
+{"configured": True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
 
+
+import scipy as sp
 
 def euler(func_i, diff, dt = 0.1):
 	return func_i + (diff)*dt

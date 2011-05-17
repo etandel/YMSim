@@ -1,3 +1,8 @@
+{"configured": True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
+
 from physics.physics import *
 from gallery.land_vehicles import *
 from utils import *
