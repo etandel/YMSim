@@ -68,23 +68,3 @@ def create_circuit():
 		circuit.append(next_track)
 		get_next_track(width, circuit[-1])
 
-
-create_circuit()
-track:
-		circuit.append(next_track)
-		get_next_track(width, circuit[-1])
-
-
-create_circuit()
-track:
-		circuit.append(next_track)
-		get_next_track(width, circuit[-1])
-
-
-create_circuit()
-track:
-		circuit.append(next_track)
-		get_next_track(width, circuit[-1])
-
-
-create_circuit()

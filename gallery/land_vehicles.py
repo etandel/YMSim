@@ -16,9 +16,3 @@ class Car(Vehicle_Dynamics):
 		while i <= tmax:
 			self.conditions.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
 			i += 1
-ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
-			i += 1
-ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
-			i += 1
-ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
-			i += 1

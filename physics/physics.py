@@ -59,9 +59,3 @@ class Vehicle_Dynamics():
 
 		conds_f = Condition(conds_i.acc_max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
 		return conds_f
-max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
-		return conds_f
-max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
-		return conds_f
-max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
-		return conds_f

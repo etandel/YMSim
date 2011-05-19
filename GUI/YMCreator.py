@@ -8,13 +8,13 @@ from PyQt4 import QtGui, QtCore
 
 class TrackCreator():
 	def __init__(self, parent):
-		self.track_type = self.make_track_type(parent)
+		self.track_list = self.make_track_list(parent)
 		self.main_container = QtGui.QGroupBox('Escolha o tipo de trecho:')
 		self.main_layout = QtGui.QHBoxLayout()
 		self.options = QtGui.QGroupBox("Opcoes:", parent)
 		self.main_container.setLayout(self.main_layout)
 	
-	def make_track_type(self, parent):
+	def make_track_list(self, parent):
 		track_type = QtGui.QComboBox(parent)
 		track_type.addItem("Reta")
 		track_type.addItem("Curva")
