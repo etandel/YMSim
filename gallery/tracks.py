@@ -1,7 +1,4 @@
-{"configured": True}
-PROJECT_DIR = "/home/echobravo/Projects/YMSim"
-from sys import path
-path.append(PROJECT_DIR)
+{'configured': False}
 
 import scipy as sp
 from physics.physics import Position
@@ -68,6 +65,24 @@ def create_circuit():
 	circuit.append(Straight_Track(width, 0, psi))
 	next_track = get_next_track(width, circuit[-1])
 	while next_track:
+		circuit.append(next_track)
+		get_next_track(width, circuit[-1])
+
+
+create_circuit()
+track:
+		circuit.append(next_track)
+		get_next_track(width, circuit[-1])
+
+
+create_circuit()
+track:
+		circuit.append(next_track)
+		get_next_track(width, circuit[-1])
+
+
+create_circuit()
+track:
 		circuit.append(next_track)
 		get_next_track(width, circuit[-1])
 

@@ -19,32 +19,38 @@ def get_yesorno(question):
 		return True
 
 
-def create_header(path_from_main):
+def create_header(path_from_main, import_string):
 	with open(os.path.join(PROJECT_DIR, path_from_main), "r+") as f:
 		configured = eval(f.readline())["configured"]
 		if configured == False:
 			lines = f.readlines()
 			f.flush()
 			f.seek(0,0)
-			f.write("{\"configured\": True}\n")
+			f.write("{'configured': True}\n")
 			f.write(import_string)
 			f.writelines(lines)
 		f.close()
 def config():
 	import_string = "PROJECT_DIR = \"" + PROJECT_DIR + "\"\nfrom sys import path" + "\npath.append(PROJECT_DIR)\n"
 
-	create_header("__main__.py")
-	create_header("utils.py")
-	create_header(os.path.join("physics","physics.py"))
-	create_header(os.path.join("gallery","tracks.py"))
-	create_header(os.path.join("gallery","land_vehicles.py"))
+	create_header("__main__.py", import_string)
+	create_header("utils.py", import_string)
+	create_header(os.path.join("physics","physics.py"), import_string)
+	create_header(os.path.join("gallery","tracks.py"), import_string)
+	create_header(os.path.join("gallery","land_vehicles.py"), import_string)
+	create_header(os.path.join("GUI","YMCreator.py"), import_string)
 
 
 def delete_header(path_from_main):
 	with open(os.path.join(PROJECT_DIR, path_from_main), "r+") as f:
 		configured = eval(f.readline())["configured"]
 		if configured == True:
-			pass#delete header
+			lines = f.readlines()
+			f.flush()
+			f.seek(0,0)
+			f.write("{'configured': False}\n")
+			for i in range(3, len(lines)):
+				f.write(lines[i])
 		f.close()
 
 def unconfig():	
@@ -53,10 +59,15 @@ def unconfig():
 	delete_header(os.path.join("physics","physics.py"))
 	delete_header(os.path.join("gallery","tracks.py"))
 	delete_header(os.path.join("gallery","land_vehicles.py"))
+	delete_header(os.path.join("GUI","YMCreator.py"))
 
 arg_list = {
 	"conf": config,
+	"config": config,
+	"configure": config,
 	"unconf": unconfig,
+	"unconfig": unconfig,
+	"unconfigure": unconfig,
 }
 def parse_args():
 	if len(sys.argv) > 1:

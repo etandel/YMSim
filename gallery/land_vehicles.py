@@ -1,7 +1,4 @@
-{"configured": True}
-PROJECT_DIR = "/home/echobravo/Projects/YMSim"
-from sys import path
-path.append(PROJECT_DIR)
+{'configured': False}
 
 from physics.physics import *
 from utils import *
@@ -18,4 +15,10 @@ class Car(Vehicle_Dynamics):
 		i = len(self.conditions)
 		while i <= tmax:
 			self.conditions.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
+			i += 1
+ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
+			i += 1
+ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
+			i += 1
+ons.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
 			i += 1

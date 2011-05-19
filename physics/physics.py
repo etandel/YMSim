@@ -1,7 +1,4 @@
-{"configured": True}
-PROJECT_DIR = "/home/echobravo/Projects/YMSim"
-from sys import path
-path.append(PROJECT_DIR)
+{'configured': False}
 
 
 import scipy as sp
@@ -61,4 +58,10 @@ class Vehicle_Dynamics():
 		Y = euler(conds_i.position.Y, speed_y, dt)
 
 		conds_f = Condition(conds_i.acc_max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
+		return conds_f
+max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
+		return conds_f
+max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
+		return conds_f
+max, conds_i.tau, Position(X,Y), psi, speed, omega, radius=conds_i.radius)
 		return conds_f
