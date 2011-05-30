@@ -1,4 +1,3 @@
-#TODO: Make abort if user doesn't want to continue
 import sys
 from re import match
 import os
@@ -40,17 +39,22 @@ def config():
 	create_header(os.path.join("gallery","land_vehicles.py"), import_string)
 	create_header(os.path.join("GUI","YMCreator.py"), import_string)
 
-
 def delete_header(path_from_main):
 	with open(os.path.join(PROJECT_DIR, path_from_main), "r+") as f:
 		configured = eval(f.readline())["configured"]
+		f.flush()
 		if configured == True:
 			lines = f.readlines()
 			f.flush()
 			f.seek(0,0)
 			f.write("{'configured': False}\n")
+			diff = -1
+			for i in range(0,4):
+				diff += len(lines[i])
+			overwriter = ' '*diff
 			for i in range(3, len(lines)):
 				f.write(lines[i])
+			f.write(overwriter)
 		f.close()
 
 def unconfig():	
