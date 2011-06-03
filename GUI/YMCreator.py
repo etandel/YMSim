@@ -6,110 +6,132 @@
 import sys
 from PyQt4 import QtGui, QtCore
 
-class GetOpts(QtGui.QWidget):
-  
-    def __init__(self, track_type):
-        super(GetOpts, self).__init__()
-        
-        self.initUI(track_type)
-        
-    def initUI(self, track_type):
-	layout = self.make_all(self, track_type)
-	self.setLayout(layout)
+class LabeledEdit(QtGui.QWidget):
+        def __init__(self, label_txt='', edit_txt='', parent=None, layout_type = 'Horizontal'):
+                super(LabeledEdit, self).__init__(parent)
+                self._initUI(label_txt, edit_txt, layout_type)
 
-        self.resize(350, 300)
+        def _initUI(self, label_txt, edit_txt, layout_type):
 
-    def make_all(self, parent, track_type):
-	if track_type == 'Escolha o tipo de pedaço: ':
-		layout = self.make_default(self)
-	elif track_type == 'Reta':
-		layout = self.make_straight(self)
-	elif track_type == 'Curva':
-		layout = self.make_curve(self)
-	else:
-		layout = self.make_clothoid(self)
+                main_layout = self._make_layout(layout_type)
+                label = self._make_label(label_txt)
+                edit = self._make_edit(edit_txt)
+                main_layout.addWidget(label)
+                main_layout.addWidget(edit)
+                self.setLayout(main_layout)
 
-	return layout 
+        def _make_edit(self, text):
+                return QtGui.QLineEdit(text, self)
+
+        def _make_label(self, text):
+                return QtGui.QLabel(text, self)
+
+        def _make_layout(self, layout_type):
+                if layout_type == 'Horizontal':
+                        return QtGui.QHBoxLayout()
+                else:
+                        return QtGui.QVBoxLayout()
 	
+class OkCancel(QtGui.QWidget):
+	def __init__(self, parent=None):
+		super(OkCancel, self).__init__(parent)
+		self._initUI()
 
-    def make_default(self, parent):
-	return QtGui.QVBoxLayout()
+	def _initUI(self):
+		main_layout = QtGui.QHBoxLayout()
+		self.ok = QtGui.QPushButton('OK', self)
+		self.cancel = QtGui.QPushButton('Cancelar', self)
 
-    def make_straight(self, parent):
-        length = QtGui.QLabel('Comprimento: ', parent)
+		main_layout.addWidget(self.ok)
+		main_layout.addWidget(self.cancel)
 
-        length_edit = QtGui.QLineEdit('Digite o comprimento.', parent)
+		self.setLayout(main_layout)
 
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
 
-        grid.addWidget(length, 1, 0)
-        grid.addWidget(length_edit, 1, 1)
+def create_opts_dlgs():
+    class Curve(QtGui.QGroupBox):
+	def __init__(self):
+        	super(Curve, self).__init__()
+		self._initUI()
 
-        self.setWindowTitle(u'Opções de Reta')
+	def _initUI(self):
+		self.setWindowTitle(u'Opções de Curva')
 
-	return grid
+		self.radius_edit = LabeledEdit('Raio:', parent = self)
+		self.angle_edit = LabeledEdit('Arco:', parent = self)
 
-    def make_curve(self, parent):
-        angle = QtGui.QLabel(u'Arco: ', parent)
-        radius = QtGui.QLabel('Raio: ', parent)
+		self.okcancel = OkCancel(self)
 
-        angle_edit = QtGui.QLineEdit('Digite o arco de curva.', parent)
-        radius_edit = QtGui.QLineEdit('Digite o raio da curva.', parent)
+		main_layout = QtGui.QVBoxLayout()
+		main_layout.addWidget(self.radius_edit)
+		main_layout.addWidget(self.angle_edit)
+		main_layout.addWidget(self.okcancel)
 
-        grid = QtGui.QGridLayout()
-        grid.setSpacing(10)
+		self.setLayout(main_layout)
+		
+  
+    class Straight(QtGui.QGroupBox):
+	def __init__(self):
+        	super(Straight, self).__init__()
+		self._initUI()
 
-        grid.addWidget(angle, 1, 0)
-        grid.addWidget(angle_edit, 1, 1)
+	def _initUI(self):
+		self.setWindowTitle(u'Opções de Reta:')
 
-        grid.addWidget(radius, 2, 0)
-        grid.addWidget(radius_edit, 2, 1)
+		self.straight = LabeledEdit('Comprimento:', parent = self)
+		self.okcancel = OkCancel(self)
 
-        self.setWindowTitle(u'Opções de Curva')
+		main_layout = QtGui.QVBoxLayout()
+		main_layout.addWidget(self.straight)
+		main_layout.addWidget(self.okcancel)
 
-	return grid
+		self.setLayout(main_layout)
 
-    def make_clothoid(self, parent):
+    class Clothoid(QtGui.QGroupBox):
 	pass
 
+    return {
+   	'curve': Curve(),
+   	'straight': Straight(),
+   	'clothoid': Clothoid(),
+    }
+        
 
 class TrackCreator(QtGui.QGroupBox):
     def __init__(self, parent):
         super(TrackCreator, self).__init__('Escolha o tipo de trecho:', parent)
-        self.initUI(parent)
+        self._initUI(parent)
 
-    def initUI(self, parent):
+    def _initUI(self, parent):
 	#create main widgets and layouts
 	straight = QtGui.QPushButton('Reta', self)
 	curve = QtGui.QPushButton('Curva', self)
 	clothoid = QtGui.QPushButton(u'Clotóide', self)
-	self.main_layout = QtGui.QVBoxLayout()
-
-	#create buttons
-	self.main_layout.addWidget(straight)
-	self.main_layout.addWidget(curve)
-	self.main_layout.addWidget(clothoid)
-
-	parent.connect(straight, QtCore.SIGNAL('clicked()'), self.straight_dialog)
-	parent.connect(curve, QtCore.SIGNAL('clicked()'), self.curve_dialog)
-	parent.connect(clothoid, QtCore.SIGNAL('clicked()'), self.clothoid_dialog)
-
+	self.main_layout = QtGui.QHBoxLayout()
+	
 	#make layout
 	self.main_layout.addWidget(straight)
 	self.main_layout.addWidget(curve)
 	self.main_layout.addWidget(clothoid)
 	self.setLayout(self.main_layout)
 
-    def straight_dialog(self):
-	dlg = GetOpts("Reta")
-	dlg.show()
+	parent.connect(straight, QtCore.SIGNAL('clicked()'), self._straight_dialog)
+	parent.connect(curve, QtCore.SIGNAL('clicked()'), self._curve_dialog)
+	parent.connect(clothoid, QtCore.SIGNAL('clicked()'), self._clothoid_dialog)
 
-    def curve_dialog(self):	
-	pass
+    def _straight_dialog(self):
+	for dlg in track_opts_dlgs:
+    		track_opts_dlgs['straight'].show()
+	
+    def _curve_dialog(self):	
+	for dlg in track_opts_dlgs:
+		track_opts_dlgs[dlg].hide()
+    	track_opts_dlgs['curve'].show()
 
-    def clothoid_dialog(self):	
-	pass
+    def _clothoid_dialog(self):	
+	for dlg in track_opts_dlgs:
+		track_opts_dlgs[dlg].hide()
+    	track_opts_dlgs['clothoid'].show()
 	
 
 class MainWindow(QtGui.QWidget):
@@ -146,8 +168,9 @@ class MainWindow(QtGui.QWidget):
 def main():
 
     app = QtGui.QApplication(sys.argv)
-    wind = MainWindow()
-    wind.show()
+    wind = MainWindow(); wind.show()
+    global track_opts_dlgs
+    track_opts_dlgs = create_opts_dlgs()
     app.exec_()
 
 
