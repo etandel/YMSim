@@ -5,6 +5,11 @@ from sys import path
 path.append(PROJECT_DIR)
 
 """GUI for circuit creation"""
+"""TODO:
+	-> Describe dialogs' behavior;
+	-> set minimum/max window size of all;
+	-> find a way to connect 'close event'; 
+"""
 
 import sys
 from PyQt4 import QtGui, QtCore
@@ -53,69 +58,56 @@ class OkCancel(QtGui.QWidget):
 
 
 def create_opts_dlgs():
-    class Curve(QtGui.QGroupBox):
-	def __init__(self):
-        	super(Curve, self).__init__()
-		self._initUI()
+    class GetOpts(QtGui.QGroupBox):
 
-	def _initUI(self):
-		self.setWindowTitle(u'Opções de Curva')
+	def __init__(self, window_title):
+		super(GetOpts, self).__init__()
+		self._initUI(window_title)
+
+	def _initUI(self, window_title):
+		self.setWindowTitle(window_title)
 		self._create_widgets()
 		self._design_layout()
-
-	def _create_widgets(self):
-		self.radius_edit = LabeledEdit('Raio:', parent = self)
-		self.angle_edit = LabeledEdit('Arco:', parent = self)
-		self.okcancel = OkCancel(self)
+		
 
 	def _design_layout(self):
 		main_layout = QtGui.QVBoxLayout()
-		main_layout.addWidget(self.radius_edit)
-		main_layout.addWidget(self.angle_edit)
-		main_layout.addWidget(self.okcancel)
+		for child in self.children():
+			main_layout.addWidget(child)
 		self.setLayout(main_layout)
 
 	def _describe_behavior(self):
 		self.connect(okcancel.ok, QtCore.SIGNAL('clicked()'), self._do_ok)
 		self.connect(okcancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
-		
 
 	def _do_ok(self):
 		pass
 
 	def _do_cancel(self):
 		pass
+			
+    class Curve(GetOpts):
+	def _create_widgets(self):
+		self.radius_edit = LabeledEdit('Raio:', parent = self)
+		self.angle_edit = LabeledEdit('Arco:', parent = self)
+		self.okcancel = OkCancel(self)
+
   
-    class Straight(QtGui.QGroupBox):
-	def __init__(self):
-        	super(Straight, self).__init__()
-		self._initUI()
-
-	def _initUI(self):
-		self.setWindowTitle(u'Opções de Reta:')
-		self._create_widgets()
-		self._design_layout()
-
-
+    class Straight(GetOpts):
 	def _create_widgets(self):
 		self.straight = LabeledEdit('Comprimento:', parent = self)
 		self.okcancel = OkCancel(self)
 
-	def _design_layout(self):
-		main_layout = QtGui.QVBoxLayout()
-		main_layout.addWidget(self.straight)
-		main_layout.addWidget(self.okcancel)
-		self.setLayout(main_layout)
 
-
-    class Clothoid(QtGui.QGroupBox):
-	pass
+    class Clothoid(GetOpts):
+	def _create_widgets(self):
+		pass
 
 
     return {
-   	'curve': Curve(),
-   	'straight': Straight(),
-   	'clothoid': Clothoid(),
+   	'curve': Curve(u'Opções de Curva'),
+   	'straight': Straight(u'Opções de Reta:'),
+   	'clothoid': Clothoid(u'opções de Clotóide'),
     }
         
 
@@ -174,7 +166,6 @@ class MainWindow(QtGui.QWidget):
 
     def initUI(self):
 	self.setWindowTitle('YMCircuit')
-	self.maximize()
 
 	track_menu = TrackMenu(self)
 
@@ -189,19 +180,13 @@ class MainWindow(QtGui.QWidget):
 	self.setLayout(vbox)
 
 
-    def maximize(self):
-	screen = QtGui.QDesktopWidget().screenGeometry()
-       	self.setGeometry(0,0, screen.width(), screen.height())
-		
-        
-
 def main():
 
     app = QtGui.QApplication(sys.argv)
-    wind = MainWindow(); wind.show()
+    wind = MainWindow(); wind.showMaximized()
     global track_opts_dlgs
     track_opts_dlgs = create_opts_dlgs()
-    app.exec_()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
