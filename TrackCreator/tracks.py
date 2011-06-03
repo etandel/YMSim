@@ -1,4 +1,8 @@
-{'configured': False}
+#coding: UTF-8
+{'configured': True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
 
 import scipy as sp
 from physics.physics import Position
@@ -12,7 +16,7 @@ class _Track:
 		self.position = position
 		
 
-class _Straight_Track(Track):
+class _Straight_Track(_Track):
 	def __init__(self, width, length, psi = 0, position = Position(0,0)):
 		super(_Straight_Track, self).__init__(width, psi, position)
 
@@ -20,7 +24,7 @@ class _Straight_Track(Track):
 		self.radius = sp.inf
 
 
-class _Curve_Track(Track):
+class _Curve_Track(_Track):
 	def __init__(self, width, radius, angle, psi = 0, position = Position(0,0)):
 		super(_Curve_Track, self).__init__(width, psi, position)
 

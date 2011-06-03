@@ -1,5 +1,8 @@
-# -*- coding: UTF-8 -*-
-{'configured': False}
+#coding: UTF-8
+{'configured': True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
 
 """GUI for circuit creation"""
 
@@ -116,27 +119,34 @@ def create_opts_dlgs():
     }
         
 
-class TrackCreator(QtGui.QGroupBox):
+class TrackMenu(QtGui.QGroupBox):
     def __init__(self, parent):
-        super(TrackCreator, self).__init__('Escolha o tipo de trecho:', parent)
+        super(TrackMenu, self).__init__('Escolha o tipo de trecho:', parent)
         self._initUI(parent)
 
     def _initUI(self, parent):
-	#create main widgets and layouts
-	straight = QtGui.QPushButton('Reta', self)
-	curve = QtGui.QPushButton('Curva', self)
-	clothoid = QtGui.QPushButton(u'Clotóide', self)
+	self._create_widgets()
+	self._design_layout()
+	self._describe_behavior()
+
+    def _describe_behavior(self):
+	self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._straight_dialog)
+	self.connect(self.curve, QtCore.SIGNAL('clicked()'), self._curve_dialog)
+	self.connect(self.clothoid, QtCore.SIGNAL('clicked()'), self._clothoid_dialog)
+
+
+    def _create_widgets(self):
+	self.straight = QtGui.QPushButton('Reta', self)
+	self.curve = QtGui.QPushButton('Curva', self)
+	self.clothoid = QtGui.QPushButton(u'Clotóide', self)
+
+    def _design_layout(self):
 	self.main_layout = QtGui.QHBoxLayout()
 	
-	#make layout
-	self.main_layout.addWidget(straight)
-	self.main_layout.addWidget(curve)
-	self.main_layout.addWidget(clothoid)
+	self.main_layout.addWidget(self.straight)
+	self.main_layout.addWidget(self.curve)
+	self.main_layout.addWidget(self.clothoid)
 	self.setLayout(self.main_layout)
-
-	parent.connect(straight, QtCore.SIGNAL('clicked()'), self._straight_dialog)
-	parent.connect(curve, QtCore.SIGNAL('clicked()'), self._curve_dialog)
-	parent.connect(clothoid, QtCore.SIGNAL('clicked()'), self._clothoid_dialog)
 
     def _straight_dialog(self):
 	for dlg in track_opts_dlgs:
@@ -166,13 +176,13 @@ class MainWindow(QtGui.QWidget):
 	self.setWindowTitle('YMCircuit')
 	self.maximize()
 
-	track_creator = TrackCreator(self)
+	track_menu = TrackMenu(self)
 
 	testBtn3 = QtGui.QPushButton('Test3', self)
 
 	splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)	
 	splitter.addWidget(testBtn3)
-	splitter.addWidget(track_creator)
+	splitter.addWidget(track_menu)
 
 	vbox = QtGui.QVBoxLayout()
 	vbox.addWidget(splitter)

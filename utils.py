@@ -1,4 +1,8 @@
-{'configured': False}
+#coding: UTF-8
+{'configured': True}
+PROJECT_DIR = "/home/echobravo/Projects/YMSim"
+from sys import path
+path.append(PROJECT_DIR)
 
 def copy(self, dest):
         dest.position = self.position
@@ -22,24 +26,6 @@ def get_float(in_message, error_message):
 	while True:
 		try:
 			value = float(raw_input(in_message))
-		except:
-			print(error_message)
-		else:
-			break
-	return value
-oat(raw_input(in_message))
-		except:
-			print(error_message)
-		else:
-			break
-	return value
-oat(raw_input(in_message))
-		except:
-			print(error_message)
-		else:
-			break
-	return value
-oat(raw_input(in_message))
 		except:
 			print(error_message)
 		else:

@@ -20,50 +20,47 @@ def get_yesorno(question):
 
 def create_header(path_from_main, import_string):
 	with open(os.path.join(PROJECT_DIR, path_from_main), "r+") as f:
-		configured = eval(f.readline())["configured"]
+		lines = f.readlines()
+		configured = eval(lines[1])['configured']
 		if configured == False:
-			lines = f.readlines()
-			f.flush()
 			f.seek(0,0)
-			f.write("{'configured': True}\n")
+			f.write("#coding: UTF-8\n" + "{'configured': True}\n")
 			f.write(import_string)
-			f.writelines(lines)
+			for i in range(2,len(lines)):
+				f.write(lines[i])
 		f.close()
 def config():
 	import_string = "PROJECT_DIR = \"" + PROJECT_DIR + "\"\nfrom sys import path" + "\npath.append(PROJECT_DIR)\n"
 
+#	create_header("TROLL.py", import_string)
 	create_header("__main__.py", import_string)
 	create_header("utils.py", import_string)
 	create_header(os.path.join("physics","physics.py"), import_string)
-	create_header(os.path.join("gallery","tracks.py"), import_string)
+	create_header(os.path.join("TrackCreator","tracks.py"), import_string)
+	create_header(os.path.join("TrackCreator","TrackCreatorGUI.py"), import_string)
 	create_header(os.path.join("gallery","land_vehicles.py"), import_string)
-	create_header(os.path.join("GUI","YMCreator.py"), import_string)
 
 def delete_header(path_from_main):
+	WRITE_STRING = "#coding: UTF-8\n" + "{'configured': False}\n"
 	with open(os.path.join(PROJECT_DIR, path_from_main), "r+") as f:
-		configured = eval(f.readline())["configured"]
-		f.flush()
-		if configured == True:
-			lines = f.readlines()
-			f.flush()
-			f.seek(0,0)
-			f.write("{'configured': False}\n")
-			diff = -1
-			for i in range(0,4):
-				diff += len(lines[i])
-			overwriter = ' '*diff
-			for i in range(3, len(lines)):
+		lines = f.readlines()
+		configured = eval(lines[1])['configured']
+	f.close()
+	if configured == True:
+		with open(os.path.join(PROJECT_DIR, path_from_main), "w") as f:
+			f.write(WRITE_STRING)
+			for i in range(5, len(lines)): #5 because it works
 				f.write(lines[i])
-			f.write(overwriter)
 		f.close()
 
 def unconfig():	
+#	delete_header("TROLL.py")
 	delete_header("__main__.py")
 	delete_header("utils.py")
 	delete_header(os.path.join("physics","physics.py"))
-	delete_header(os.path.join("gallery","tracks.py"))
+	delete_header(os.path.join("TrackCreator","tracks.py"))
+	delete_header(os.path.join("TrackCreator","TrackCreatorGUI.py"))
 	delete_header(os.path.join("gallery","land_vehicles.py"))
-	delete_header(os.path.join("GUI","YMCreator.py"))
 
 arg_list = {
 	"conf": config,
