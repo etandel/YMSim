@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 {'configured': False}
 
-"""Module for circuit creation"""
+"""GUI for circuit creation"""
 
 import sys
 from PyQt4 import QtGui, QtCore
+import tracks
 
 class LabeledEdit(QtGui.QWidget):
         def __init__(self, label_txt='', edit_txt='', parent=None, layout_type = 'Horizontal'):
@@ -56,19 +57,31 @@ def create_opts_dlgs():
 
 	def _initUI(self):
 		self.setWindowTitle(u'Opções de Curva')
+		self._create_widgets()
+		self._design_layout()
 
+	def _create_widgets(self):
 		self.radius_edit = LabeledEdit('Raio:', parent = self)
 		self.angle_edit = LabeledEdit('Arco:', parent = self)
-
 		self.okcancel = OkCancel(self)
 
+	def _design_layout(self):
 		main_layout = QtGui.QVBoxLayout()
 		main_layout.addWidget(self.radius_edit)
 		main_layout.addWidget(self.angle_edit)
 		main_layout.addWidget(self.okcancel)
-
 		self.setLayout(main_layout)
+
+	def _describe_behavior(self):
+		self.connect(okcancel.ok, QtCore.SIGNAL('clicked()'), self._do_ok)
+		self.connect(okcancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
 		
+
+	def _do_ok(self):
+		pass
+
+	def _do_cancel(self):
+		pass
   
     class Straight(QtGui.QGroupBox):
 	def __init__(self):
@@ -77,18 +90,24 @@ def create_opts_dlgs():
 
 	def _initUI(self):
 		self.setWindowTitle(u'Opções de Reta:')
+		self._create_widgets()
+		self._design_layout()
 
+
+	def _create_widgets(self):
 		self.straight = LabeledEdit('Comprimento:', parent = self)
 		self.okcancel = OkCancel(self)
 
+	def _design_layout(self):
 		main_layout = QtGui.QVBoxLayout()
 		main_layout.addWidget(self.straight)
 		main_layout.addWidget(self.okcancel)
-
 		self.setLayout(main_layout)
+
 
     class Clothoid(QtGui.QGroupBox):
 	pass
+
 
     return {
    	'curve': Curve(),
@@ -121,7 +140,8 @@ class TrackCreator(QtGui.QGroupBox):
 
     def _straight_dialog(self):
 	for dlg in track_opts_dlgs:
-    		track_opts_dlgs['straight'].show()
+		track_opts_dlgs[dlg].hide()
+   	track_opts_dlgs['straight'].show()
 	
     def _curve_dialog(self):	
 	for dlg in track_opts_dlgs:
