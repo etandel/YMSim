@@ -23,17 +23,17 @@ class LabeledEdit(QtGui.QWidget):
         def _initUI(self, label_txt, edit_txt, layout_type):
 
                 main_layout = self._make_layout(layout_type)
-                label = self._make_label(label_txt)
-                edit = self._make_edit(edit_txt)
-                main_layout.addWidget(label)
-                main_layout.addWidget(edit)
+                self._make_label(label_txt)
+                self._make_edit(edit_txt)
+                main_layout.addWidget(self.label)
+                main_layout.addWidget(self.edit)
                 self.setLayout(main_layout)
 
         def _make_edit(self, text):
-                return QtGui.QLineEdit(text, self)
+                self.edit = QtGui.QLineEdit(text, self)
 
         def _make_label(self, text):
-                return QtGui.QLabel(text, self)
+                self.label = QtGui.QLabel(text, self)
 
         def _make_layout(self, layout_type):
                 if layout_type == 'Horizontal':
@@ -68,6 +68,8 @@ def create_opts_dlgs():
 		self.setWindowTitle(window_title)
 		self._create_widgets()
 		self._design_layout()
+		self._describe_behavior()
+		
 		
 
 	def _design_layout(self):
@@ -77,20 +79,36 @@ def create_opts_dlgs():
 		self.setLayout(main_layout)
 
 	def _describe_behavior(self):
-		self.connect(okcancel.ok, QtCore.SIGNAL('clicked()'), self._do_ok)
-		self.connect(okcancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
+		self.connect(self.okcancel.ok, QtCore.SIGNAL('clicked()'), self._do_ok)
+		self.connect(self.okcancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
 
 	def _do_ok(self):
+		#validate
+		#mandar entrada para função createXXX
+		#metodo abstrato apenas
 		pass
 
 	def _do_cancel(self):
-		pass
+		self.hide()
+
+	def _atribute_type_error(self):
+		msgbox = QtGui.QMessageBox(self)
+		msgbox.setText(u"Atributos de pista devem conter apenas números.")
+		msgbox.setStandardButtons(QtGui.QMessageBox.Ok)
+		msgbox.setDefaultButton(QtGui.QMessageBox.Ok)
+		msgbox.exec_()
 			
     class Curve(GetOpts):
 	def _create_widgets(self):
 		self.radius_edit = LabeledEdit('Raio:', parent = self)
 		self.angle_edit = LabeledEdit('Arco:', parent = self)
 		self.okcancel = OkCancel(self)
+
+	def _do_ok(self):
+		radius = tracks.validate_float(self.radius_edit.edit.text())
+		angle = tracks.validate_float(self.angle_edit.edit.text())
+		if angle == None or radius == None:
+			self._atribute_type_error()
 
   
     class Straight(GetOpts):
@@ -101,7 +119,7 @@ def create_opts_dlgs():
 
     class Clothoid(GetOpts):
 	def _create_widgets(self):
-		pass
+		self.okcancel = OkCancel(self)
 
 
     return {
@@ -161,23 +179,35 @@ class MainWindow(QtGui.QWidget):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.initUI()
+        self._initUI()
 
 
-    def initUI(self):
+    def _initUI(self):
+	self._create_widgets()
+	self._design_layout()
+	self._describe_behavior()
+
 	self.setWindowTitle('YMCircuit')
 
-	track_menu = TrackMenu(self)
 
-	testBtn3 = QtGui.QPushButton('Test3', self)
 
-	splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)	
-	splitter.addWidget(testBtn3)
-	splitter.addWidget(track_menu)
 
-	vbox = QtGui.QVBoxLayout()
-	vbox.addWidget(splitter)
-	self.setLayout(vbox)
+    def _create_widgets(self):
+	self.track_menu = TrackMenu(self)
+	self.testBtn3 = QtGui.QPushButton('Test3', self)
+
+	self.splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)	
+	self.splitter.addWidget(self.testBtn3)
+	self.splitter.addWidget(self.track_menu)
+
+    def _design_layout(self):
+	main_layout = QtGui.QVBoxLayout()
+	main_layout.addWidget(self.splitter)
+	self.setLayout(main_layout)
+	pass
+
+    def _describe_behavior(self):
+	pass
 
 
 def main():

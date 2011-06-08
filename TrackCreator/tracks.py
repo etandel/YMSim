@@ -6,8 +6,16 @@ path.append(PROJECT_DIR)
 
 import scipy as sp
 from physics.physics import Position
-from utils import get_float
 from re import match
+
+def validate_float(input_val):
+	try:
+		value = float(input_val)
+	except:
+		value = None
+
+	return value
+
 
 class _Track:
 	def __init__(self, width, psi = 0, position = Position(0,0)):
@@ -50,4 +58,3 @@ class Circuit(list):
 		psi = sp.pi - angle + last_track.psi	
 		position = Position(0,0) #calculate position
 		self.append(_Curve_Track(width, radius, angle, psi, position))
-

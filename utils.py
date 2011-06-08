@@ -22,12 +22,3 @@ def frange(initial, final, step):
 def is_valid_input(val, expected):
 	return type(val) == expected
 
-def get_float(in_message, error_message):
-	while True:
-		try:
-			value = float(raw_input(in_message))
-		except:
-			print(error_message)
-		else:
-			break
-	return value
