@@ -40,7 +40,8 @@ class LabeledEdit(QtGui.QWidget):
                         return QtGui.QHBoxLayout()
                 else:
                         return QtGui.QVBoxLayout()
-	
+
+
 class OkCancel(QtGui.QWidget):
 	def __init__(self, parent=None):
 		super(OkCancel, self).__init__(parent)
@@ -57,8 +58,9 @@ class OkCancel(QtGui.QWidget):
 		self.setLayout(main_layout)
 
 
+
 def create_opts_dlgs():
-    class GetOpts(QtGui.QGroupBox):
+    class GetOpts(QtGui.QWidget):
 
 	def __init__(self, window_title):
 		super(GetOpts, self).__init__()
@@ -70,8 +72,6 @@ def create_opts_dlgs():
 		self._design_layout()
 		self._describe_behavior()
 		
-		
-
 	def _design_layout(self):
 		main_layout = QtGui.QVBoxLayout()
 		for child in self.children():
@@ -83,13 +83,27 @@ def create_opts_dlgs():
 		self.connect(self.okcancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
 
 	def _do_ok(self):
-		#validate
-		#mandar entrada para função createXXX
-		#metodo abstrato apenas
 		pass
 
 	def _do_cancel(self):
 		self.hide()
+
+	def _get_all_attributes(self):
+		attributes = []
+		for child in self.children():
+			if type(child) == LabeledEdit:
+				attribute = self._get_atribute(child.edit)
+				if not attribute:
+					return None
+				else: attributes.append(attribute)
+
+		return tuple(attributes)
+
+	def _get_atribute(self, edit):
+		atribute = tracks.validate_float(edit.text())
+		if atribute == None:
+			self._atribute_type_error()
+		return atribute
 
 	def _atribute_type_error(self):
 		msgbox = QtGui.QMessageBox(self)
@@ -98,6 +112,33 @@ def create_opts_dlgs():
 		msgbox.setDefaultButton(QtGui.QMessageBox.Ok)
 		msgbox.exec_()
 			
+
+	    class PsiWidth(QtGui.QWidget):
+	
+	def _create_widgets(self):
+		self.width_edit = LabeledEdit('Largura do circuito:', parent = self)
+		self.psi_edit = LabeledEdit('Ângulo:', 'Digite o ângulo entre o primeiro pedaço de pista e a horizontal', parent = self)
+		self.ok_cancel = OkCancel(self)
+
+	def _describe_behavior(self):
+		self.connect(self.ok_cancel.ok, QtCore.SIGNAL('clicked()'), self._do_ok)
+		self.connect(self.ok_cancel.cancel, QtCore.SIGNAL('clicked()'), self._do_cancel)
+
+	def _do_ok(self):
+		attributes = self._get_all_attributes()
+		global circuit
+		circuit = tracks.Circuit(attributes)	
+
+  
+    class Straight(GetOpts):
+	def _create_widgets(self):
+		self.length_edit = LabeledEdit('Comprimento:', parent = self)
+		self.okcancel = OkCancel(self)
+
+	def _do_ok(self):
+		attributes = self._get_all_attributes()
+		circuit.create_straight(attributes)
+
     class Curve(GetOpts):
 	def _create_widgets(self):
 		self.radius_edit = LabeledEdit('Raio:', parent = self)
@@ -105,22 +146,15 @@ def create_opts_dlgs():
 		self.okcancel = OkCancel(self)
 
 	def _do_ok(self):
-		radius = tracks.validate_float(self.radius_edit.edit.text())
-		angle = tracks.validate_float(self.angle_edit.edit.text())
-		if angle == None or radius == None:
-			self._atribute_type_error()
-
-  
-    class Straight(GetOpts):
-	def _create_widgets(self):
-		self.straight = LabeledEdit('Comprimento:', parent = self)
-		self.okcancel = OkCancel(self)
-
+		attributes = self._get_all_attributes()
+		circuit.create_curve(attributes)
 
     class Clothoid(GetOpts):
 	def _create_widgets(self):
 		self.okcancel = OkCancel(self)
 
+	def _do_ok(self):
+		pass
 
     return {
    	'curve': Curve(u'Opções de Curva'),
