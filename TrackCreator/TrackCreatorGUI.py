@@ -113,7 +113,7 @@ def create_opts_dlgs():
 		msgbox.exec_()
 			
 
-	    class PsiWidth(QtGui.QWidget):
+    class PsiWidth(GetOpts):
 	
 	def _create_widgets(self):
 		self.width_edit = LabeledEdit('Largura do circuito:', parent = self)
@@ -127,7 +127,7 @@ def create_opts_dlgs():
 	def _do_ok(self):
 		attributes = self._get_all_attributes()
 		global circuit
-		circuit = tracks.Circuit(attributes)	
+		circuit = tracks.Circuit(*attributes)
 
   
     class Straight(GetOpts):
@@ -137,7 +137,7 @@ def create_opts_dlgs():
 
 	def _do_ok(self):
 		attributes = self._get_all_attributes()
-		circuit.create_straight(attributes)
+		circuit.create_straight(*attributes)
 
     class Curve(GetOpts):
 	def _create_widgets(self):
@@ -147,7 +147,8 @@ def create_opts_dlgs():
 
 	def _do_ok(self):
 		attributes = self._get_all_attributes()
-		circuit.create_curve(attributes)
+		if attributes:
+			circuit.create_curve(*attributes)
 
     class Clothoid(GetOpts):
 	def _create_widgets(self):
@@ -159,7 +160,8 @@ def create_opts_dlgs():
     return {
    	'curve': Curve(u'Opções de Curva'),
    	'straight': Straight(u'Opções de Reta:'),
-   	'clothoid': Clothoid(u'opções de Clotóide'),
+   	'clothoid': Clothoid(u'Opções de Clotóide'),
+	'psi_width': PsiWidth(u'Novo Circuito'),
     }
         
 
@@ -177,12 +179,14 @@ class TrackMenu(QtGui.QGroupBox):
 	self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._straight_dialog)
 	self.connect(self.curve, QtCore.SIGNAL('clicked()'), self._curve_dialog)
 	self.connect(self.clothoid, QtCore.SIGNAL('clicked()'), self._clothoid_dialog)
+	self.connect(self.psi_width, QtCore.SIGNAL('clicked()'), self._psi_width_dialog)
 
 
     def _create_widgets(self):
 	self.straight = QtGui.QPushButton('Reta', self)
 	self.curve = QtGui.QPushButton('Curva', self)
 	self.clothoid = QtGui.QPushButton(u'Clotóide', self)
+	self.psi_width = QtGui.QPushButton(u'Novo circuito', self)
 
     def _design_layout(self):
 	self.main_layout = QtGui.QHBoxLayout()
@@ -190,6 +194,7 @@ class TrackMenu(QtGui.QGroupBox):
 	self.main_layout.addWidget(self.straight)
 	self.main_layout.addWidget(self.curve)
 	self.main_layout.addWidget(self.clothoid)
+	self.main_layout.addWidget(self.psi_width)
 	self.setLayout(self.main_layout)
 
     def _straight_dialog(self):
@@ -206,6 +211,11 @@ class TrackMenu(QtGui.QGroupBox):
 	for dlg in track_opts_dlgs:
 		track_opts_dlgs[dlg].hide()
     	track_opts_dlgs['clothoid'].show()
+
+    def _psi_width_dialog(self):	
+	for dlg in track_opts_dlgs:
+		track_opts_dlgs[dlg].hide()
+    	track_opts_dlgs['psi_width'].show()
 	
 
 class MainWindow(QtGui.QWidget):
