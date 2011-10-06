@@ -1,9 +1,6 @@
-config.pyc
-utils.pyc
-__init__.pyc
-land_vehicles.pyc
-__init__.pyc
-physics.pyc
+.gitignore
+*pyc
+*swp
 maple
 antigo.py
 TROLL.py
