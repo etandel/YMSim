@@ -63,27 +63,17 @@ class Circuit(list):
         return TrackInfo(orient, position)
         
     def create_curve(self, angle=constants['angle']):
-        """
         last_track = self[-1]
-        orient = -2*sp.pi + angle - last_track.orient    
-        X = last_track.position.X + constants['radius'] * sp.sin(angle)
-        Y = last_track.position.Y - constants['radius'] * (1 - sp.cos(angle))
-        position = Position(X,Y) #calculate position
-        self.append(_Curve_Track(orient, position))
-        """
-        last_track = self[-1]
-        #orient = (2*sp.pi + angle + last_track.orient) % (2 * sp.pi)
         orient  = last_track.orient + constants['angle']
 
         x0 = last_track.position.X
         y0 = last_track.position.Y
         R = constants['radius']
-#        X = x0 + sp.cos(orient) * R * sp.sin(angle) - sp.sin(orient) * R * (1 - sp.cos(angle))
-#        Y = x0 + sp.sin(orient) * R * sp.sin(angle) + sp.cos(orient) * R * (1 - sp.cos(angle))
+        #the following math is based on Mauro's matlab program
         X = x0 + sp.cos(last_track.orient) * R * sp.sin(angle) - sp.sin(last_track.orient) * R * (1 - sp.cos(angle))
         Y = y0 + sp.sin(last_track.orient) * R * sp.sin(angle) + sp.cos(last_track.orient) * R * (1 - sp.cos(angle))
 
-        position = Position(X,Y) #calculate position
+        position = Position(X,Y)
         self.append(_Curve_Track(orient, position))
         return TrackInfo(orient, position)
 
