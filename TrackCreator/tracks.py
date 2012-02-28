@@ -64,7 +64,7 @@ class Circuit(list):
         
     def create_curve(self, angle=constants['angle']):
         last_track = self[-1]
-        orient  = last_track.orient + constants['angle']
+        orient = (last_track.orient + constants['angle']) % (2*sp.pi)
 
         x0 = last_track.position.X
         y0 = last_track.position.Y
