@@ -15,7 +15,8 @@ import sys
 from PyQt4 import QtGui, QtCore
 import tracks
 from scipy import pi
-from spiral import *
+#from spiral import *
+from drawcircuit import *
 
 class LabeledEdit(QtGui.QWidget):
         def __init__(self, label_txt='', edit_txt='', parent=None, layout_type = 'Horizontal'):
@@ -150,12 +151,10 @@ class MainWindow(QtGui.QWidget):
 
     def _create_widgets(self):
         self.right = RightSplitter(self)
-        #self.testBtn3 = QtGui.QPushButton('Test3', self)
-        self.gl_tst = SpiralWidget(self)
+        self.circuit_draw = CircuitWidget(circuit, self)
 
         self.splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)    
-        #self.splitter.addWidget(self.testBtn3)
-        self.splitter.addWidget(self.gl_tst)
+        self.splitter.addWidget(self.circuit_draw)
         self.splitter.addWidget(self.right)
 
 
