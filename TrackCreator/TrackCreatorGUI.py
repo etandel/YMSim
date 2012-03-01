@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 #coding: UTF-8
 {'configured': True}
 PROJECT_DIR = "/home/echobravo/Projects/YMSim"
@@ -90,14 +91,17 @@ class TrackMenu(QtGui.QWidget):
     def _do_left_turn(self):
         circuit.create_curve(-tracks.constants['angle'])
         self._print_log(u'curva para a esquerda')
+        self.window().circuit_draw.updateGL()
 
     def _do_straight(self):
         circuit.create_straight()
         self._print_log(u'reta')
+        self.window().circuit_draw.updateGL()
 
     def _do_right_turn(self):
         circuit.create_curve()
         self._print_log(u'curva para a direita')
+        self.window().circuit_draw.updateGL()
 
     def _print_log(self, track_type):
         new_track = circuit[-1]

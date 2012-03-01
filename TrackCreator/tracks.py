@@ -18,10 +18,11 @@ def validate_float(input_val):
     return value
 
 constants = {
-    'length': 3 , #meters
-    'radius': 2 , #meters
-    'angle': sp.pi/4 , #rad
-    'pts_per_meter': 10 ,
+    'length': 3.0 , #meters
+    'radius': 2.0 , #meters
+    'angle': sp.pi/12 , #rad
+    'diff_index': 50 ,
+    'width': 1.0 ,
 }
 
 TrackInfo = namedtuple('TrackInfo', 'orient position')
@@ -54,26 +55,35 @@ class Circuit(list):
 
     def create_straight(self):
         last_track = self[-1]
-        length = constants['length']
+        #the following math is based on Mauro's matlab program
         orient = last_track.orient
-        X = last_track.position.X + length * sp.cos(orient)
-        Y = last_track.position.Y - length * sp.sin(orient)
-        position = Position(X,Y)
-        self.append(_Straight_Track(orient, position))
+        x0 = last_track.position.X
+        y0 = last_track.position.Y
+        dl = constants['length'] / constants['diff_index']
+        for i in range(1, constants['diff_index']+1):
+            X = last_track.position.X + dl * i * sp.cos(orient)
+            Y = last_track.position.Y - dl * i * sp.sin(orient)
+            position = Position(X,Y)
+            self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
         
     def create_curve(self, angle=constants['angle']):
         last_track = self[-1]
-        orient = (last_track.orient + constants['angle']) % (2*sp.pi)
-
+        #the following math is based on Mauro's matlab program
+        R = constants['radius'] if angle < 0 else -constants['radius']
+        beta = last_track.orient
         x0 = last_track.position.X
         y0 = last_track.position.Y
-        R = constants['radius']
-        #the following math is based on Mauro's matlab program
-        X = x0 + sp.cos(last_track.orient) * R * sp.sin(angle) - sp.sin(last_track.orient) * R * (1 - sp.cos(angle))
-        Y = y0 + sp.sin(last_track.orient) * R * sp.sin(angle) + sp.cos(last_track.orient) * R * (1 - sp.cos(angle))
+        da = angle/constants['diff_index']
+        for i in range(1, constants['diff_index'] + 1): 
+            xl = R * sp.sin(da*i);
+            yl = R * (1 - sp.cos(da*i));   
+            X = x0 + sp.cos(beta) * xl - sp.sin(beta) * yl
+            Y = y0 + sp.sin(beta) * xl + sp.cos(beta) * yl
 
-        position = Position(X,Y)
-        self.append(_Curve_Track(orient, position))
+            orient = (beta + da*i)
+            position = Position(X,Y)
+            self.append(_Curve_Track(orient, position))
         return TrackInfo(orient, position)
+
 

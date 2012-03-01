@@ -21,17 +21,25 @@ class CircuitWidget(QGLWidget):
         
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
+
+
+#        glBegin(GL_POLYGON)
+#        glColor(0.5, 0.5, 0.5)
+#        for point in self.circuit:
+#            glVertex(point.position.X, point.position.Y, 0.0)
+#        glEnd()
+
+
         
-        # Draw the circuit in 'immediate mode'
-        # WARNING: You should not be doing the spiral calculation inside the loop
-        # even if you are using glBegin/glEnd, sin/cos are fairly expensive functions
-        # I've left it here as is to make the code simpler.
-        glColor(0.0, 1.0, 0.0)
+        # Draw the circuit as a line in 'immediate mode'
         glBegin(GL_LINE_STRIP)
+        glColor(0.75, 0.75, 0.75)
         for point in self.circuit:
             glVertex(point.position.X, point.position.Y, 0.0)
         glEnd()
         
+        ##########****#############
+
 #        glEnableClientState(GL_VERTEX_ARRAY)
 #        
 #        spiral_array = []
@@ -60,7 +68,7 @@ class CircuitWidget(QGLWidget):
          glViewport(0, 0, w, h)
          glMatrixMode(GL_PROJECTION)
          glLoadIdentity()
-         gluPerspective(40.0, 1.0, 1.0, 30.0)
+         gluPerspective(45.0, 1.0, 0.1, 100.0)
      
      def initializeGL(self):
          '''
@@ -72,5 +80,5 @@ class CircuitWidget(QGLWidget):
 
          glMatrixMode(GL_PROJECTION)
          glLoadIdentity()
-         gluPerspective(40.0, 1.0, 1.0, 30.0)
+         gluPerspective(45.0, 1.0, 0.1, 100.0)
 
