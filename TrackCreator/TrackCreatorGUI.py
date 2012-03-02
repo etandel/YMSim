@@ -14,7 +14,7 @@ path.append(PROJECT_DIR)
 
 import sys
 from PyQt4 import QtGui, QtCore
-import tracks
+import tracks 
 from scipy import pi
 #from spiral import *
 from drawcircuit import *
@@ -77,6 +77,7 @@ class TrackMenu(QtGui.QWidget):
         self.left_turn = QtGui.QPushButton(u'Curva Esq', self)
         self.straight = QtGui.QPushButton('Reta', self)
         self.right_turn = QtGui.QPushButton('Curva Dir', self)
+        self.clear = QtGui.QPushButton('Limpar', self)
 
     def _design_layout(self):
         main_layout = QtGui.QHBoxLayout()
@@ -87,6 +88,7 @@ class TrackMenu(QtGui.QWidget):
         self.connect(self.left_turn, QtCore.SIGNAL('clicked()'), self._do_left_turn)
         self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._do_straight)
         self.connect(self.right_turn, QtCore.SIGNAL('clicked()'), self._do_right_turn)
+        self.connect(self.clear, QtCore.SIGNAL('clicked()'), self._do_clear)
 
     def _do_left_turn(self):
         circuit.create_curve(-tracks.constants['angle'])
@@ -101,6 +103,13 @@ class TrackMenu(QtGui.QWidget):
     def _do_right_turn(self):
         circuit.create_curve()
         self._print_log(u'curva para a direita')
+        self.window().circuit_draw.updateGL()
+
+    def _do_clear(self):
+        self.parent().parent().log.clear()
+        global circuit
+        circuit = tracks.Circuit() 
+        self.window().circuit_draw.circuit = circuit
         self.window().circuit_draw.updateGL()
 
     def _print_log(self, track_type):
