@@ -114,7 +114,7 @@ class TrackMenu(QtGui.QWidget):
 
     def _print_log(self, track_type):
         new_track = circuit[-1]
-        last_track = circuit[-2]
+        last_track = circuit[-tracks.constants['diff_index']]
         logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position) + u' e posição final ' + unicode(new_track.position) + u'.\n' + unicode(circuit[-1].orient * 180/pi)
         self.parent().parent().log.append(logstr)
         
