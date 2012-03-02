@@ -18,10 +18,10 @@ def validate_float(input_val):
     return value
 
 constants = {
-    'length': 3.0 , #meters
+    'length': 0.1 , #meters
     'radius': 2.0 , #meters
     'angle': sp.pi/12 , #rad
-    'diff_index': 50 ,
+    'diff_index': 200 ,
     'width': 1.0 ,
 }
 
@@ -55,22 +55,30 @@ class Circuit(list):
 
     def create_straight(self):
         last_track = self[-1]
+
         #the following math is based on Mauro's matlab program
-        orient = last_track.orient
+        if len(self) > 1:
+            last_pos = self[-1].position
+            before_last_pos = self[-2].position
+            orient = sp.arctan((last_pos.Y - before_last_pos.Y) / (last_pos.X - before_last_pos.X))
+        else:
+            orient = last_track.orient
+
         x0 = last_track.position.X
         y0 = last_track.position.Y
         dl = constants['length'] / constants['diff_index']
         for i in range(1, constants['diff_index']+1):
-            X = last_track.position.X + dl * i * sp.cos(orient)
-            Y = last_track.position.Y - dl * i * sp.sin(orient)
+            X = x0 + dl * i * sp.cos(orient)
+            Y = y0 + dl * i * sp.sin(orient)
             position = Position(X,Y)
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
         
     def create_curve(self, angle=constants['angle']):
+        
         last_track = self[-1]
         #the following math is based on Mauro's matlab program
-        R = constants['radius'] if angle < 0 else -constants['radius']
+        R = constants['radius'] if angle > 0 else -constants['radius']
         beta = last_track.orient
         x0 = last_track.position.X
         y0 = last_track.position.Y
