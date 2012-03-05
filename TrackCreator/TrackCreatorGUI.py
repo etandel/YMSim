@@ -14,6 +14,85 @@ from scipy import pi
 #from spiral import *
 from drawcircuit import CircuitWidget
 
+class CircuitMenuButtons(QtGui.QWidget):
+    def __init__(self, parent):
+        super(CircuitMenuButtons, self).__init__(parent)
+        self._initUI(parent)
+
+    def _initUI(self, parent):
+        self._create_widgets()
+        self._design_layout()
+        self._describe_behavior()
+
+    def _create_widgets(self):
+        self.left_turn = QtGui.QPushButton(u'Curva Esq', self)
+        self.straight = QtGui.QPushButton('Reta', self)
+        self.right_turn = QtGui.QPushButton('Curva Dir', self)
+        self.clear = QtGui.QPushButton('Limpar', self)
+
+    def _design_layout(self):
+        main_layout = QtGui.QHBoxLayout()
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
+        
+    def _describe_behavior(self):
+        self.connect(self.left_turn, QtCore.SIGNAL('clicked()'), self._do_left_turn)
+        self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._do_straight)
+        self.connect(self.right_turn, QtCore.SIGNAL('clicked()'), self._do_right_turn)
+        self.connect(self.clear, QtCore.SIGNAL('clicked()'), self._do_clear)
+
+    def _do_left_turn(self):
+        circuit.create_curve()
+        self.parent().print_log(u'curva para a esquerda')
+        self.window().circuit_draw.updateGL()
+
+    def _do_straight(self):
+        circuit.create_straight()
+        self.parent().print_log(u'reta')
+        self.window().circuit_draw.updateGL()
+
+    def _do_right_turn(self):
+        circuit.create_curve(-tracks.constants['angle'])
+        self.parent().print_log(u'curva para a direita')
+        self.window().circuit_draw.updateGL()
+
+    def _do_clear(self):
+        self.parent().log.clear()
+        global circuit
+        circuit = tracks.Circuit() 
+        self.window().circuit_draw.circuit = circuit
+        self.window().circuit_draw.updateGL()
+
+
+class CircuitMenuDock(QtGui.QWidget):
+    def __init__(self, parent):
+        super(CircuitMenuDock, self).__init__(parent)
+        self._initUI(parent)
+
+    def _initUI(self, parent):
+        self._create_widgets()
+        self._design_layout()
+        self._describe_behavior()
+
+    def _create_widgets(self):
+        self.menu = CircuitMenuButtons(self)
+        self.log = QtGui.QTextEdit(self)
+
+    def _design_layout(self):
+        main_layout = QtGui.QVBoxLayout()
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
+
+    def _describe_behavior(self):
+        self.log.setReadOnly(True)
+
+    def print_log(self, track_type):
+        new_track = circuit[-1]
+        last_track = circuit[-tracks.constants['diff_index']]
+        logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position) + u' e posição final ' + unicode(new_track.position) + u'.\n' + unicode(circuit[-1].orient * 180/pi)
+        self.log.append(logstr)
+
+
 class MainWindow(QtGui.QMainWindow):
   
     def __init__(self):
@@ -30,13 +109,14 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def _create_widgets(self):
-        draw_circuit = CircuitWidget(circuit, self)
-        self.setCentralWidget(draw_circuit)
+        circuit_draw = CircuitWidget(circuit, self)
+        self.setCentralWidget(circuit_draw)
+        self.circuit_draw = circuit_draw
 
         l_dock_area, r_dock_area = QtCore.Qt.LeftDockWidgetArea , QtCore.Qt.RightDockWidgetArea
         circuit_menu = QtGui.QDockWidget('Circuit Menu', self)
         circuit_menu.setAllowedAreas(l_dock_area | r_dock_area)
-        circuit_menu.setWidget(QtGui.QWidget(self))
+        circuit_menu.setWidget(CircuitMenuDock(self))
         self.addDockWidget(r_dock_area, circuit_menu)
 
     def _design_layout(self):
@@ -59,3 +139,4 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     wind = MainWindow(); wind.show()
     sys.exit(app.exec_())
+
