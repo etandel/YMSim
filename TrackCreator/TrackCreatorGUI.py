@@ -12,9 +12,9 @@ from PyQt4 import QtGui, QtCore
 import tracks 
 from scipy import pi
 #from spiral import *
-from drawcircuit import *
+from drawcircuit import CircuitWidget
 
-class MainWindow(QtGui.QWidget):
+class MainWindow(QtGui.QMainWindow):
   
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -30,13 +30,25 @@ class MainWindow(QtGui.QWidget):
 
 
     def _create_widgets(self):
-        pass
+        draw_circuit = CircuitWidget(circuit, self)
+        self.setCentralWidget(draw_circuit)
+
+        l_dock_area, r_dock_area = QtCore.Qt.LeftDockWidgetArea , QtCore.Qt.RightDockWidgetArea
+        circuit_menu = QtGui.QDockWidget('Circuit Menu', self)
+        circuit_menu.setAllowedAreas(l_dock_area | r_dock_area)
+        circuit_menu.setWidget(QtGui.QWidget(self))
+        self.addDockWidget(r_dock_area, circuit_menu)
 
     def _design_layout(self):
         pass
 
     def _create_menu(self):
-        pass
+        menu_bar = self.menuBar()
+
+        file_m = menu_bar.addMenu('&File')
+        view_m = menu_bar.addMenu('&View')
+        track_m = menu_bar.addMenu('&Track')
+        help_m = menu_bar.addMenu('&Help')
 
     def _describe_behavior(self):
         pass
