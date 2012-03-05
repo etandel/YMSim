@@ -22,15 +22,6 @@ class CircuitWidget(QGLWidget):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-
-#        glBegin(GL_POLYGON)
-#        glColor(0.5, 0.5, 0.5)
-#        for point in self.circuit:
-#            glVertex(point.position.X, point.position.Y, 0.0)
-#        glEnd()
-
-
-        
         # Draw the circuit as a line in 'immediate mode'
         glBegin(GL_LINE_STRIP)
         glColor(0.75, 0.75, 0.75)
@@ -64,11 +55,12 @@ class CircuitWidget(QGLWidget):
          '''
          Resize the GL window 
          '''
+         h = h if h != 0 else 1
          
          glViewport(0, 0, w, h)
          glMatrixMode(GL_PROJECTION)
          glLoadIdentity()
-         gluPerspective(45.0, 1.0, 0.1, 100.0)
+         gluPerspective(45.0, w/h, 0.1, 100.0)
      
      def initializeGL(self):
          '''
