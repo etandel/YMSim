@@ -91,7 +91,7 @@ class TrackMenu(QtGui.QWidget):
         self.connect(self.clear, QtCore.SIGNAL('clicked()'), self._do_clear)
 
     def _do_left_turn(self):
-        circuit.create_curve(-tracks.constants['angle'])
+        circuit.create_curve()
         self._print_log(u'curva para a esquerda')
         self.window().circuit_draw.updateGL()
 
@@ -101,7 +101,7 @@ class TrackMenu(QtGui.QWidget):
         self.window().circuit_draw.updateGL()
 
     def _do_right_turn(self):
-        circuit.create_curve()
+        circuit.create_curve(-tracks.constants['angle'])
         self._print_log(u'curva para a direita')
         self.window().circuit_draw.updateGL()
 
@@ -156,26 +156,37 @@ class MainWindow(QtGui.QWidget):
 
 
     def _initUI(self):
+        self.setWindowTitle('YMCircuit')
+        #self._create_menu()
         self._create_widgets()
         self._design_layout()
         self._describe_behavior()
-        self.setWindowTitle('YMCircuit')
 
 
     def _create_widgets(self):
         self.right = RightSplitter(self)
         self.circuit_draw = CircuitWidget(circuit, self)
 
-        self.splitter = QtGui.QSplitter(QtCore.Qt.Horizontal)    
+        self.splitter = QtGui.QSplitter(QtCore.Qt.Horizontal, self)
         self.splitter.addWidget(self.circuit_draw)
         self.splitter.addWidget(self.right)
 
-
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
-        main_layout.addWidget(self.splitter)
+        #main_layout.addWidget(self.splitter)
+        map(main_layout.addWidget, self.children())
         self.setLayout(main_layout)
 
+    def _create_menu(self):
+        menu_bar = QtGui.QMenuBar(self)
+
+        file_m = QtGui.QMenu("&File", self)
+        track_m = QtGui.QMenu("&Track", self)
+        help_m = QtGui.QMenu("&Help", self)
+
+        menu_bar.addMenu(file_m)
+        menu_bar.addMenu(track_m)
+        menu_bar.addMenu(help_m)
 
     def _describe_behavior(self):
         pass
