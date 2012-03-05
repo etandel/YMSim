@@ -19,49 +19,6 @@ from scipy import pi
 #from spiral import *
 from drawcircuit import *
 
-class LabeledEdit(QtGui.QWidget):
-        def __init__(self, label_txt='', edit_txt='', parent=None, layout_type = 'Horizontal'):
-                super(LabeledEdit, self).__init__(parent)
-                self._initUI(label_txt, edit_txt, layout_type)
-
-        def _initUI(self, label_txt, edit_txt, layout_type):
-
-                main_layout = self._make_layout(layout_type)
-                self._make_label(label_txt)
-                self._make_edit(edit_txt)
-                main_layout.addWidget(self.label)
-                main_layout.addWidget(self.edit)
-                self.setLayout(main_layout)
-
-        def _make_edit(self, text):
-                self.edit = QtGui.QLineEdit(text, self)
-
-        def _make_label(self, text):
-                self.label = QtGui.QLabel(text, self)
-
-        def _make_layout(self, layout_type):
-                if layout_type == 'Horizontal':
-                        return QtGui.QHBoxLayout()
-                else:
-                        return QtGui.QVBoxLayout()
-
-
-class OkCancel(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(OkCancel, self).__init__(parent)
-        self._initUI()
-
-    def _initUI(self):
-        main_layout = QtGui.QHBoxLayout()
-        self.ok = QtGui.QPushButton('OK', self)
-        self.cancel = QtGui.QPushButton('Cancelar', self)
-
-        main_layout.addWidget(self.ok)
-        main_layout.addWidget(self.cancel)
-
-        self.setLayout(main_layout)
-
-
 
 class TrackMenu(QtGui.QWidget):
     def __init__(self, parent):
