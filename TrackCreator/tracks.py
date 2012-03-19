@@ -19,7 +19,7 @@ def validate_float(input_val):
 
 constants = {
     'length': 0.1 , #meters
-    'radius': 2.0 , #meters
+    'radius': 0.2 , #meters
     'angle': sp.pi/12 , #rad
     'diff_index': 200 ,
     'width': 1.0 ,
@@ -55,12 +55,17 @@ class Circuit(list):
 
     def create_straight(self):
         last_track = self[-1]
+        orient = last_track.orient
 
-        #the following math is based on Mauro's matlab program
+        # the following math is good old linear algebra:
+        # get the last to points, create a versor on that direction
+        # and then the line comes natural: r: (x0 + Vx * t, y0 + Vy * t)
         if len(self) > 1:
             last_pos = self[-1].position
             before_last_pos = self[-2].position
-            orient = sp.arctan((last_pos.Y - before_last_pos.Y) / (last_pos.X - before_last_pos.X))
+            ori_vec = [last_pos.X - before_last_pos.X, last_pos.Y - before_last_pos.Y]
+            ori_mod = sp.sqrt(ori_vec[0]**2 + ori_vec[1]*2)
+            map(lambda pt: pt/ori_mod,  ori_vec)
         else:
             orient = last_track.orient
 
@@ -68,8 +73,8 @@ class Circuit(list):
         y0 = last_track.position.Y
         dl = constants['length'] / constants['diff_index']
         for i in range(1, constants['diff_index']+1):
-            X = x0 + dl * i * sp.cos(orient)
-            Y = y0 + dl * i * sp.sin(orient)
+            X = x0 + i*ori_vec[0]
+            Y = y0 + i*ori_vec[1]
             position = Position(X,Y)
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
