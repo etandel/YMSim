@@ -91,10 +91,9 @@ class CircuitMenuDock(QtGui.QWidget):
         last_track = circuit[-tracks.constants['diff_index']]
         logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position) + u' e posição final ' + unicode(new_track.position) + u'.\n' + unicode(circuit[-1].orient * 180/pi)
         self.log.append(logstr)
-
+        self.window().statusBar().showMessage(logstr, 4000)
 
 class MainWindow(QtGui.QMainWindow):
-  
     def __init__(self):
         super(MainWindow, self).__init__()
         self._initUI()
@@ -104,7 +103,6 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('YMCircuit')
         self._create_menu()
         self._create_widgets()
-        self._design_layout()
         self._describe_behavior()
 
 
