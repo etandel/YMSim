@@ -29,7 +29,7 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.straight = QtGui.QPushButton('Reta', self)
         self.right_turn = QtGui.QPushButton('Curva Dir', self)
         self.clear = QtGui.QPushButton('Limpar', self)
-        self.back = QtGui.QPushButton('Voltar', self)
+        self.undo = QtGui.QPushButton('Desfazer', self)
 
     def _design_layout(self):
         main_layout = QtGui.QHBoxLayout()
@@ -41,7 +41,7 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._do_straight)
         self.connect(self.right_turn, QtCore.SIGNAL('clicked()'), self._do_right_turn)
         self.connect(self.clear, QtCore.SIGNAL('clicked()'), self._do_clear)
-        self.connect(self.back, QtCore.SIGNAL('clicked()'), self._do_back)
+        self.connect(self.undo, QtCore.SIGNAL('clicked()'), self._do_undo)
 
     def _do_left_turn(self):
         self.window().circuit.create_curve()
@@ -64,7 +64,7 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.window().circuit = circuit
         self.window().circuit_draw.updateGL()
 
-    def _do_back(self):
+    def _do_undo(self):
         wind = self.window()
         track_list = wind.circuit[:-tracks.constants['diff_index']]
         wind.circuit = tracks.Circuit(track_list)
