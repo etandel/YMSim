@@ -9,10 +9,55 @@ path.append(PROJECT_DIR)
 
 import sys
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtCore import Qt
 import tracks 
 from scipy import pi
 #from spiral import *
 from drawcircuit import CircuitWidget
+
+class LabeledEdit(QtGui.QWidget):
+    def __init__(self, label_txt='', edit_txt='', parent=None, layout_type='Horizontal'):
+        super(LabeledEdit, self).__init__(parent)
+        self._initUI(label_txt, edit_txt, layout_type)
+
+    def _initUI(self, label_txt, edit_txt, layout_type):
+        self.label = QtGui.QLabel(label_txt, self)
+        self.edit = QtGui.QLineEdit(edit_txt, self)
+
+        main_layout = self._make_layout(layout_type)
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
+
+    def _make_layout(self, layout_type):
+        if layout_type == 'Horizontal':
+            return QtGui.QHBoxLayout()
+        else:
+            return QtGui.QVBoxLayout()
+
+class LogWindow(QtGui.QWidget):
+    def __init__(self, logstring = ''):
+        super(LogWindow, self).__init__()
+        self.logstring = logstring
+        self._initUI()
+
+    def _initUI(self):
+        self._create_widgets()
+        self._design_layout()
+        self._describe_behavior()
+        
+    def _create_widgets(self):
+        self.log = QtGui.QTextEdit(self)
+
+    def _design_layout(self):
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addWidget(self.log)
+        self.setLayout(main_layout)
+
+    def _describe_behavior(self):
+        self.log.setReadOnly(True)
+
+    def append(self, logstr):
+        self.log.append(logstr)
 
 class CircuitMenuButtons(QtGui.QWidget):
     def __init__(self, parent):
@@ -69,7 +114,6 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.window().circuit_draw.updateGL()
 
     def _do_clear(self):
-        self.parent().log.clear()
         circuit = tracks.Circuit() 
         self.window().circuit = circuit
         self.window().circuit_draw.updateGL()
@@ -106,14 +150,18 @@ class CircuitMenuDock(QtGui.QWidget):
         circuit = self.window().circuit
         new_track = circuit[-1]
         last_track = circuit[-tracks.constants['diff_index']]
-        logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position) + u' e posição final ' + unicode(new_track.position) + u'.\n' + unicode(circuit[-1].orient * 180/pi)
-        self.log.append(logstr)
+
+        logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position)
+        logstr += u', posição final ' + unicode(new_track.position)
+        logstr += u' e orientação ' + unicode(circuit[-1].orient * 180/pi) + u'.\n'
+        logwindow.append(logstr)
         self.window().statusBar().showMessage(logstr, 4000)
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.circuit = tracks.Circuit()
+        self.logstring = ''
         self._initUI()
 
 
@@ -128,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(circuit_draw)
         self.circuit_draw = circuit_draw
 
-        l_dock_area, r_dock_area = QtCore.Qt.LeftDockWidgetArea , QtCore.Qt.RightDockWidgetArea
+        l_dock_area, r_dock_area = Qt.LeftDockWidgetArea , Qt.RightDockWidgetArea
         circuit_menu = QtGui.QDockWidget('Circuit Menu', self)
         circuit_menu.setAllowedAreas(l_dock_area | r_dock_area)
         circuit_menu.setWidget(CircuitMenuDock(self))
@@ -138,13 +186,20 @@ class MainWindow(QtGui.QMainWindow):
         menu_bar = self.menuBar()
 
         file_m = menu_bar.addMenu('&File')
+
         view_m = menu_bar.addMenu('&View')
+        logshort = QtGui.QKeySequence(Qt.Key_Control + Qt.Key_L)
+        view_m.addAction('Log', self._show_log_window)
+        
         track_m = menu_bar.addMenu('&Track')
         help_m = menu_bar.addMenu('&Help')
 
+    def _show_log_window(self):
+        logwindow.show()
 
-if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    wind = MainWindow(); wind.show()
-    sys.exit(app.exec_())
+
+app = QtGui.QApplication(sys.argv)
+wind = MainWindow(); wind.show()
+logwindow = LogWindow()
+sys.exit(app.exec_())
 
