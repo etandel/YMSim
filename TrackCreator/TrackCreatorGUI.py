@@ -32,8 +32,18 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.undo = QtGui.QPushButton('Desfazer', self)
 
     def _design_layout(self):
-        main_layout = QtGui.QHBoxLayout()
-        map(main_layout.addWidget, self.children())
+        creation_layout = QtGui.QHBoxLayout()
+        creation_layout.addWidget(self.left_turn)
+        creation_layout.addWidget(self.straight)
+        creation_layout.addWidget(self.right_turn)
+        
+        undo_layout = QtGui.QHBoxLayout()
+        undo_layout.addWidget(self.clear)
+        undo_layout.addWidget(self.undo)
+        
+        main_layout = QtGui.QVBoxLayout()
+        main_layout.addLayout(creation_layout)
+        main_layout.addLayout(undo_layout)
         self.setLayout(main_layout)
         
     def _describe_behavior(self):
