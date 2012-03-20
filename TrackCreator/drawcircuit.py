@@ -10,9 +10,8 @@ class CircuitWidget(QGLWidget):
      Widget for drawing the circuit.
      '''
     
-     def __init__(self, circuit, parent):
+     def __init__(self, parent):
         QGLWidget.__init__(self, parent)
-        self.circuit = circuit
 
      def paintGL(self):
         '''
@@ -25,7 +24,7 @@ class CircuitWidget(QGLWidget):
         # Draw the circuit as a line in 'immediate mode'
         glBegin(GL_LINE_STRIP)
         glColor(0.75, 0.75, 0.75)
-        for point in self.circuit:
+        for point in self.window().circuit:
             glVertex(point.position.X, point.position.Y, 0.0)
         glEnd()
         

@@ -29,6 +29,7 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.straight = QtGui.QPushButton('Reta', self)
         self.right_turn = QtGui.QPushButton('Curva Dir', self)
         self.clear = QtGui.QPushButton('Limpar', self)
+        self.back = QtGui.QPushButton('Voltar', self)
 
     def _design_layout(self):
         main_layout = QtGui.QHBoxLayout()
@@ -40,29 +41,31 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.connect(self.straight, QtCore.SIGNAL('clicked()'), self._do_straight)
         self.connect(self.right_turn, QtCore.SIGNAL('clicked()'), self._do_right_turn)
         self.connect(self.clear, QtCore.SIGNAL('clicked()'), self._do_clear)
+        self.connect(self.back, QtCore.SIGNAL('clicked()'), self._do_back)
 
     def _do_left_turn(self):
-        circuit.create_curve()
+        self.window().circuit.create_curve()
         self.parent().print_log(u'curva para a esquerda')
         self.window().circuit_draw.updateGL()
 
     def _do_straight(self):
-        circuit.create_straight()
+        self.window().circuit.create_straight()
         self.parent().print_log(u'reta')
         self.window().circuit_draw.updateGL()
 
     def _do_right_turn(self):
-        circuit.create_curve(-tracks.constants['angle'])
+        self.window().circuit.create_curve(-tracks.constants['angle'])
         self.parent().print_log(u'curva para a direita')
         self.window().circuit_draw.updateGL()
 
     def _do_clear(self):
         self.parent().log.clear()
-        global circuit
         circuit = tracks.Circuit() 
-        self.window().circuit_draw.circuit = circuit
+        self.window().circuit = circuit
         self.window().circuit_draw.updateGL()
 
+    def _do_back(self):
+        pass
 
 class CircuitMenuDock(QtGui.QWidget):
     def __init__(self, parent):
@@ -87,6 +90,7 @@ class CircuitMenuDock(QtGui.QWidget):
         self.log.setReadOnly(True)
 
     def print_log(self, track_type):
+        circuit = self.window().circuit
         new_track = circuit[-1]
         last_track = circuit[-tracks.constants['diff_index']]
         logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position) + u' e posição final ' + unicode(new_track.position) + u'.\n' + unicode(circuit[-1].orient * 180/pi)
@@ -96,6 +100,7 @@ class CircuitMenuDock(QtGui.QWidget):
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.circuit = tracks.Circuit()
         self._initUI()
 
 
@@ -107,7 +112,7 @@ class MainWindow(QtGui.QMainWindow):
 
 
     def _create_widgets(self):
-        circuit_draw = CircuitWidget(circuit, self)
+        circuit_draw = CircuitWidget(self)
         self.setCentralWidget(circuit_draw)
         self.circuit_draw = circuit_draw
 
@@ -117,9 +122,6 @@ class MainWindow(QtGui.QMainWindow):
         circuit_menu.setWidget(CircuitMenuDock(self))
         self.addDockWidget(r_dock_area, circuit_menu)
 
-    def _design_layout(self):
-        pass
-
     def _create_menu(self):
         menu_bar = self.menuBar()
 
@@ -128,11 +130,7 @@ class MainWindow(QtGui.QMainWindow):
         track_m = menu_bar.addMenu('&Track')
         help_m = menu_bar.addMenu('&Help')
 
-    def _describe_behavior(self):
-        pass
 
-
-circuit = tracks.Circuit()
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     wind = MainWindow(); wind.show()
