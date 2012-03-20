@@ -65,7 +65,10 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.window().circuit_draw.updateGL()
 
     def _do_back(self):
-        pass
+        wind = self.window()
+        track_list = wind.circuit[:-tracks.constants['diff_index']]
+        wind.circuit = tracks.Circuit(track_list)
+        wind.circuit_draw.updateGL()
 
 class CircuitMenuDock(QtGui.QWidget):
     def __init__(self, parent):
@@ -108,7 +111,6 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle('YMCircuit')
         self._create_menu()
         self._create_widgets()
-        self._describe_behavior()
 
 
     def _create_widgets(self):

@@ -49,9 +49,13 @@ class _Curve_Track(_Track):
         self.angle = constants['angle']
 
 class Circuit(list):
-    def __init__(self):
+    def __init__(self, track_list = None):
         super(Circuit, self).__init__()
-        self.append(_Track())
+        if track_list:
+            for t in track_list:
+                self.append(t)
+        else:
+            self.append(_Track())
 
     def create_straight(self):
         last_track = self[-1]
