@@ -67,10 +67,11 @@ class Circuit(list):
         if len(self) > 1:
             last_pos = self[-1].position
             before_last_pos = self[-2].position
-            ori_vec = [last_pos.X - before_last_pos.X, last_pos.Y - before_last_pos.Y]
+            ori_vec = (last_pos.X - before_last_pos.X, last_pos.Y - before_last_pos.Y)
             ori_mod = sp.sqrt(ori_vec[0]**2 + ori_vec[1]*2)
             map(lambda pt: pt/ori_mod,  ori_vec)
         else:
+            ori_vec = (1,0)
             orient = last_track.orient
 
         x0 = last_track.position.X
