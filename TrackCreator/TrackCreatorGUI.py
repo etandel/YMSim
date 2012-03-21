@@ -15,24 +15,20 @@ from scipy import pi
 #from spiral import *
 from drawcircuit import CircuitWidget
 
-class LabeledEdit(QtGui.QWidget):
-    def __init__(self, label_txt='', edit_txt='', parent=None, layout_type='Horizontal'):
-        super(LabeledEdit, self).__init__(parent)
-        self._initUI(label_txt, edit_txt, layout_type)
+class FloatEdit(QtGui.QLineEdit):
+    def __init__(self, placeholder='', parent=None):
+        super(FloatEdit, self).__init__(parent)
 
-    def _initUI(self, label_txt, edit_txt, layout_type):
-        self.label = QtGui.QLabel(label_txt, self)
-        self.edit = QtGui.QLineEdit(edit_txt, self)
+        self.setPlaceholderText(placeholder) 
+        self.setValidator(QtGui.QDoubleValidator(self))
 
-        main_layout = self._make_layout(layout_type)
-        map(main_layout.addWidget, self.children())
-        self.setLayout(main_layout)
-
-    def _make_layout(self, layout_type):
-        if layout_type == 'Horizontal':
-            return QtGui.QHBoxLayout()
-        else:
-            return QtGui.QVBoxLayout()
+    @property
+    def value(self):
+        try:
+            val = float(self.text())
+        except ValueError:
+            val = None
+        return val
 
 class LogWindow(QtGui.QWidget):
     def __init__(self, logstring = ''):
@@ -124,6 +120,39 @@ class CircuitMenuButtons(QtGui.QWidget):
         wind.circuit = tracks.Circuit(track_list)
         wind.circuit_draw.updateGL()
 
+class CircuitParamsWidget(QtGui.QGroupBox):
+    def __init__(self, parent):
+        super(CircuitParamsWidget, self).__init__(u'Opções', parent)
+        self._initUI()
+
+    def _initUI(self):
+        self._create_widgets()
+        self._design_layout()
+
+    def _create_widgets(self):
+        self._length_edit = FloatEdit('Comp. da reta', self)
+        self._radius_edit = FloatEdit("Raio da curva", self)
+        self._arc_edit    = FloatEdit(u"Arco da curva", self)
+
+    def _design_layout(self):
+        main_layout = QtGui.QFormLayout()
+        main_layout.addRow('Comprimento:', self._length_edit)
+        main_layout.addRow('Raio:', self._radius_edit)
+        main_layout.addRow('Arco:', self._arc_edit)
+        self.setLayout(main_layout)
+
+    @property
+    def length(self):
+        return self._length_edit.val
+
+    @property
+    def radius(self):
+        return self._radius_edit.val
+
+    @property
+    def arc(self):
+        return self._arc_edit.val
+
 class CircuitMenuDock(QtGui.QWidget):
     def __init__(self, parent):
         super(CircuitMenuDock, self).__init__(parent)
@@ -132,19 +161,16 @@ class CircuitMenuDock(QtGui.QWidget):
     def _initUI(self, parent):
         self._create_widgets()
         self._design_layout()
-        self._describe_behavior()
 
     def _create_widgets(self):
         self.menu = CircuitMenuButtons(self)
-        self.log = QtGui.QTextEdit(self)
+        self.options = CircuitParamsWidget(self)
 
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
         map(main_layout.addWidget, self.children())
+        main_layout.insertSpacing(-1, 10000)
         self.setLayout(main_layout)
-
-    def _describe_behavior(self):
-        self.log.setReadOnly(True)
 
     def print_log(self, track_type):
         circuit = self.window().circuit
