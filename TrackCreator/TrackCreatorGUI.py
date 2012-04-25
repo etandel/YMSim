@@ -169,7 +169,7 @@ class CircuitMenuDock(QtGui.QWidget):
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
         map(main_layout.addWidget, self.children())
-        main_layout.insertSpacing(-1, 10000)
+        main_layout.insertSpacing(-1, 300)
         self.setLayout(main_layout)
 
     def print_log(self, track_type):

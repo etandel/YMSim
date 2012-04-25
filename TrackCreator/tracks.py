@@ -67,9 +67,10 @@ class Circuit(list):
         if len(self) > 1:
             last_pos = self[-1].position
             before_last_pos = self[-2].position
-            ori_vec = (last_pos.X - before_last_pos.X, last_pos.Y - before_last_pos.Y)
-            ori_mod = sp.sqrt(ori_vec[0]**2 + ori_vec[1]*2)
-            map(lambda pt: pt/ori_mod,  ori_vec)
+            ori_vec = [last_pos.X - before_last_pos.X, last_pos.Y - before_last_pos.Y]
+            ori_mod = sp.sqrt(ori_vec[0]**2 + ori_vec[1]**2)
+            ori_vec[0] /= ori_mod
+            ori_vec[1] /= ori_mod
         else:
             ori_vec = (1,0)
             orient = last_track.orient
@@ -78,8 +79,8 @@ class Circuit(list):
         y0 = last_track.position.Y
         dl = constants['length'] / constants['diff_index']
         for i in range(1, constants['diff_index']+1):
-            X = x0 + i*ori_vec[0]
-            Y = y0 + i*ori_vec[1]
+            X = x0 + i*dl*ori_vec[0]
+            Y = y0 + i*dl*ori_vec[1]
             position = Position(X,Y)
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
