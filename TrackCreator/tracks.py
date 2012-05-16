@@ -62,7 +62,7 @@ class Circuit(list):
         orient = last_track.orient
 
         # the following math is good old linear algebra:
-        # get the last to points, create a versor on that direction
+        # get the last two points, create a versor on that direction
         # and then the line comes natural: r: (x0 + Vx * t, y0 + Vy * t)
         if len(self) > 1:
             last_pos = self[-1].position
