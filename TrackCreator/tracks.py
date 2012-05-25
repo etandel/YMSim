@@ -57,7 +57,7 @@ class Circuit(list):
         else:
             self.append(_Track())
 
-    def create_straight(self):
+    def create_straight(self, length):
         last_track = self[-1]
         orient = last_track.orient
 
@@ -77,7 +77,7 @@ class Circuit(list):
 
         x0 = last_track.position.X
         y0 = last_track.position.Y
-        dl = constants['length'] / constants['diff_index']
+        dl = length / constants['diff_index']
         for i in range(1, constants['diff_index']+1):
             X = x0 + i*dl*ori_vec[0]
             Y = y0 + i*dl*ori_vec[1]
@@ -85,11 +85,11 @@ class Circuit(list):
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
         
-    def create_curve(self, angle=constants['angle']):
+    def create_curve(self, angle, radius):
         
         last_track = self[-1]
         #the following math is based on Mauro's matlab program
-        R = constants['radius'] if angle > 0 else -constants['radius']
+        R = radius if angle > 0 else -radius
         beta = last_track.orient
         x0 = last_track.position.X
         y0 = last_track.position.Y

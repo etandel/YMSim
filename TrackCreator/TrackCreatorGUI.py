@@ -95,19 +95,27 @@ class CircuitMenuButtons(QtGui.QWidget):
         self.connect(self.undo, QtCore.SIGNAL('clicked()'), self._do_undo)
 
     def _do_left_turn(self):
-        self.window().circuit.create_curve()
-        self.parent().print_log(u'curva para a esquerda')
-        self.window().circuit_draw.updateGL()
+        angle = self.parent().options.angle
+        radius = self.parent().options.radius
+        if angle and radius:
+            self.window().circuit.create_curve(angle, radius)
+            self.parent().print_log(u'curva para a esquerda')
+            self.window().circuit_draw.updateGL()
 
     def _do_straight(self):
-        self.window().circuit.create_straight()
-        self.parent().print_log(u'reta')
-        self.window().circuit_draw.updateGL()
+        length = self.parent().options.length
+        if length:
+            self.window().circuit.create_straight(length)
+            self.parent().print_log(u'reta')
+            self.window().circuit_draw.updateGL()
 
     def _do_right_turn(self):
-        self.window().circuit.create_curve(-tracks.constants['angle'])
-        self.parent().print_log(u'curva para a direita')
-        self.window().circuit_draw.updateGL()
+        angle = self.parent().options.angle
+        radius = self.parent().options.radius
+        if angle and radius:
+            self.window().circuit.create_curve(-angle, radius)
+            self.parent().print_log(u'curva para a direita')
+            self.window().circuit_draw.updateGL()
 
     def _do_clear(self):
         circuit = tracks.Circuit() 
@@ -132,26 +140,26 @@ class CircuitParamsWidget(QtGui.QGroupBox):
     def _create_widgets(self):
         self._length_edit = FloatEdit('Comp. da reta', self)
         self._radius_edit = FloatEdit("Raio da curva", self)
-        self._arc_edit    = FloatEdit(u"Arco da curva", self)
+        self._angle_edit  = FloatEdit(u"Arco da curva", self)
 
     def _design_layout(self):
         main_layout = QtGui.QFormLayout()
         main_layout.addRow('Comprimento:', self._length_edit)
         main_layout.addRow('Raio:', self._radius_edit)
-        main_layout.addRow('Arco:', self._arc_edit)
+        main_layout.addRow('Arco:', self._angle_edit)
         self.setLayout(main_layout)
 
     @property
     def length(self):
-        return self._length_edit.val
+        return self._length_edit.value
 
     @property
     def radius(self):
-        return self._radius_edit.val
+        return self._radius_edit.value
 
     @property
-    def arc(self):
-        return self._arc_edit.val
+    def angle(self):
+        return self._angle_edit.value
 
 class CircuitMenuDock(QtGui.QWidget):
     def __init__(self, parent):
