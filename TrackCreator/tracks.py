@@ -48,16 +48,31 @@ class _Curve_Track(_Track):
         self.radius = constants['radius']
         self.angle = constants['angle']
 
+def _margin_left(pos, orient, width):
+    X = pos.X
+    Y = pos.Y
+    return Position(X-sp.sin(orient)*width/2, Y+sp.cos(orient)*width/2)
+    
+def _margin_right(pos, orient, width):
+    X = pos.X
+    Y = pos.Y
+
 class Circuit(list):
     def __init__(self, track_list = None):
         super(Circuit, self).__init__()
+
         if track_list:
             for t in track_list:
                 self.append(t)
+                self.left  = [l for l in track_list.left]
+                self.right = [r for r in track_list.right]
         else:
             self.append(_Track())
+            self.left  = []
+            self.right = []
 
-    def create_straight(self, length):
+
+    def create_straight(self, length, width):
         last_track = self[-1]
         orient = last_track.orient
 
@@ -81,11 +96,15 @@ class Circuit(list):
         for i in range(1, constants['diff_index']+1):
             X = x0 + i*dl*ori_vec[0]
             Y = y0 + i*dl*ori_vec[1]
+
+            self.left.append(Position(X-sp.sin(orient)*width/2, Y+sp.cos(orient)*width/2))
+            self.right.append(Position(X+sp.sin(orient)*width/2, Y-sp.cos(orient)*width/2))
+
             position = Position(X,Y)
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
         
-    def create_curve(self, angle, radius):
+    def create_curve(self, angle, radius, width):
         
         last_track = self[-1]
         #the following math is based on Mauro's matlab program
@@ -101,7 +120,11 @@ class Circuit(list):
             Y = y0 + sp.sin(beta) * xl + sp.cos(beta) * yl
 
             orient = (beta + da*i)
+
             position = Position(X,Y)
+            self.left.append(_margin_left(position, orient, width))
+            self.right.append(_margin_right(position, orient, width))
+
             self.append(_Curve_Track(orient, position))
         return TrackInfo(orient, position)
 

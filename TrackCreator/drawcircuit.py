@@ -28,6 +28,18 @@ class CircuitWidget(QGLWidget):
             glVertex(point.position.X, point.position.Y, 0.0)
         glEnd()
         
+        #glBegin(GL_LINE_STRIP)
+        #glColor(1.0, 0.0, 0.0)
+        #for point in self.window().circuit.left:
+        #    glVertex(point.X, point.Y, 0.0)
+        #glEnd()
+
+#        glBegin(GL_LINE_STRIP)
+#        glColor(0.0, 1.0, 0.0)
+#        for point in self.window().circuit.right:
+#            glVertex(point.X, point.Y, 0.0)
+#        glEnd()
+
         ##########****#############
 
 #        glEnableClientState(GL_VERTEX_ARRAY)
