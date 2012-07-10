@@ -28,25 +28,25 @@ constants = {
 TrackInfo = namedtuple('TrackInfo', 'orient position')
 
 class _Track(object):
-    def __init__(self, orient = 0, position = Position(0,0)):
+    def __init__(self, orient=0, position=Position(0,0)):
         self.orient = orient
         self.position = position
         
 
 class _Straight_Track(_Track):
-    def __init__(self, orient = 0, position = Position(0,0)):
+    def __init__(self, length, width, orient=0, position=Position(0,0)):
         super(_Straight_Track, self).__init__(orient, position)
-
-        self.length = constants['length']
+        self.length = length
         self.radius = sp.inf
+        self.width = width
 
 
 class _Curve_Track(_Track):
-    def __init__(self, orient = 0, position = Position(0,0)):
+    def __init__(self, radius, angle, width, orient=0, position=Position(0,0)):
         super(_Curve_Track, self).__init__(orient, position)
-
-        self.radius = constants['radius']
-        self.angle = constants['angle']
+        self.radius = radius
+        self.angle = angle
+        self.width = width
 
 def _margin_left(pos, orient, width):
     X = pos.X
@@ -101,7 +101,7 @@ class Circuit(list):
 
             self.left.append(_margin_left(position, orient, width))
             self.right.append(_margin_right(position, orient, width))
-            self.append(_Straight_Track(orient, position))
+            self.append(_Straight_Track(length, width, orient, position))
         return TrackInfo(orient, position)
         
     def create_curve(self, angle, radius, width):
@@ -125,7 +125,7 @@ class Circuit(list):
             self.left.append(_margin_left(position, orient, width))
             self.right.append(_margin_right(position, orient, width))
 
-            self.append(_Curve_Track(orient, position))
+            self.append(_Curve_Track(radius, angle, width, orient, position))
         return TrackInfo(orient, position)
 
     def remove_last(self):
