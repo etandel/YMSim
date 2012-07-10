@@ -126,8 +126,7 @@ class CircuitMenuButtons(QtGui.QWidget):
 
     def _do_undo(self):
         wind = self.window()
-        track_list = wind.circuit[:-tracks.constants['diff_index']]
-        wind.circuit = tracks.Circuit(track_list)
+        wind.circuit.remove_last()
         wind.circuit_draw.updateGL()
 
 class CircuitParamsWidget(QtGui.QGroupBox):

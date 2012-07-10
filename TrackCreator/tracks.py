@@ -128,4 +128,10 @@ class Circuit(list):
             self.append(_Curve_Track(orient, position))
         return TrackInfo(orient, position)
 
+    def remove_last(self):
+        for i in xrange(-constants['diff_index'],0):
+            self.pop(i)
+            self.left.pop(i)
+            self.right.pop(i)
+
 
