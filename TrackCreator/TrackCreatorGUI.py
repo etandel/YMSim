@@ -227,6 +227,8 @@ class MainWindow(QtGui.QMainWindow):
         menu_bar = self.menuBar()
 
         file_m = menu_bar.addMenu('&File')
+        file_m.addAction('&Load', self._save)
+        file_m.addAction('&Save', self._load)
 
         view_m = menu_bar.addMenu('&View')
         logshort = QtGui.QKeySequence(Qt.Key_Control + Qt.Key_L)
@@ -237,6 +239,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def _show_log_window(self):
         logwindow.show()
+
+    def _save(self):
+        pass
+
+    def _load(self):
+        pass
 
 
 app = QtGui.QApplication(sys.argv)
