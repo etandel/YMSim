@@ -12,7 +12,6 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 import tracks 
 from scipy import pi
-#from spiral import *
 from drawcircuit import CircuitWidget
 
 class FloatEdit(QtGui.QLineEdit):

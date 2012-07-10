@@ -56,6 +56,7 @@ def _margin_left(pos, orient, width):
 def _margin_right(pos, orient, width):
     X = pos.X
     Y = pos.Y
+    return Position(X+sp.sin(orient)*width/2, Y-sp.cos(orient)*width/2)
 
 class Circuit(list):
     def __init__(self, track_list = None):
@@ -96,11 +97,10 @@ class Circuit(list):
         for i in range(1, constants['diff_index']+1):
             X = x0 + i*dl*ori_vec[0]
             Y = y0 + i*dl*ori_vec[1]
-
-            self.left.append(Position(X-sp.sin(orient)*width/2, Y+sp.cos(orient)*width/2))
-            self.right.append(Position(X+sp.sin(orient)*width/2, Y-sp.cos(orient)*width/2))
-
             position = Position(X,Y)
+
+            self.left.append(_margin_left(position, orient, width))
+            self.right.append(_margin_right(position, orient, width))
             self.append(_Straight_Track(orient, position))
         return TrackInfo(orient, position)
         
