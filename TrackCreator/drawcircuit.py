@@ -35,7 +35,7 @@ class CircuitWidget(QGLWidget):
         glEnd()
 
         glBegin(GL_LINE_STRIP)
-        glColor(0.0, 1.0, 0.0)
+        glColor(1.0, 0.0, 0.0)
         for point in self.window().circuit.right:
             glVertex(point.X, point.Y, 0.0)
         glEnd()
