@@ -8,6 +8,7 @@ path.append(PROJECT_DIR)
 """GUI for circuit creation"""
 
 import sys
+import csv
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 import tracks 
@@ -227,8 +228,8 @@ class MainWindow(QtGui.QMainWindow):
         menu_bar = self.menuBar()
 
         file_m = menu_bar.addMenu('&File')
-        file_m.addAction('&Load', self._save)
-        file_m.addAction('&Save', self._load)
+        file_m.addAction('&Load', self._load)
+        file_m.addAction('&Save', self._save)
 
         view_m = menu_bar.addMenu('&View')
         logshort = QtGui.QKeySequence(Qt.Key_Control + Qt.Key_L)
@@ -241,11 +242,22 @@ class MainWindow(QtGui.QMainWindow):
         logwindow.show()
 
     def _save(self):
-        pass
+        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
+        with open(fname, 'w') as f:
+            writer = csv.writer(f)
+            for track in self.window().circuit:
+                X = str(track.position.X)
+                Y = str(track.position.Y)
+                writer.writerow((X,Y))
 
     def _load(self):
         pass
-
+#        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
+#        with open(fname) as f:
+#            for row in csv.reader(f):
+#                X = float(row[0])
+#                Y = float(row[1])
+                
 
 app = QtGui.QApplication(sys.argv)
 wind = MainWindow(); wind.show()
