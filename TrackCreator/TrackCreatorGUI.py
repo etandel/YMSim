@@ -1,19 +1,17 @@
 #!/usr/bin/env python2
 #coding: UTF-8
-{'configured': True}
-PROJECT_DIR = "/home/echobravo/Projects/YMSim"
-from sys import path
-path.append(PROJECT_DIR)
 
 """GUI for circuit creation"""
 
 import sys
 import csv
+
+from scipy import pi
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
-import tracks 
-from scipy import pi
-from drawcircuit import CircuitWidget
+
+from TrackCreator import tracks 
+from TrackCreator.drawcircuit import CircuitWidget
 
 class FloatEdit(QtGui.QLineEdit):
     def __init__(self, placeholder='', parent=None):
