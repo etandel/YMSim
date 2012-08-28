@@ -4,7 +4,6 @@ PROJECT_DIR = "/home/echobravo/Projects/YMSim"
 from sys import path
 path.append(PROJECT_DIR)
 
-
 import scipy as sp
 
 def euler(func_i, diff, dt = 0.1):
@@ -23,7 +22,10 @@ class Position:
 
 
 class Condition:
-    """Classe que armazena as condicoes atuais de um veiculo, que sao, em ordem: acc_max, tau, position = (0,0), psi = 0, speed = 0, radius = sp.inf."""
+    """
+    Classe que armazena as condicoes atuais de um veiculo, que sao, em ordem:
+    acc_max, tau, position=(0,0), psi=0, speed=0, radius=sp.inf.
+    """
 
     def __init__(self, acc_max, tau, position, psi = 0, speed = 0, omega = 0, radius = sp.inf):
         self.position = position
@@ -43,7 +45,7 @@ class Vehicle_Dynamics():
         return acc_max - v/tau
 
     def acc_long_break(self, v, tau, acc_max):
-        pass 
+        raise NotImplemented
 
     def acc_lat(self, v, tau, acc_max, rad):
         return v**2/rad    
