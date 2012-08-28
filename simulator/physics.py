@@ -67,9 +67,9 @@ class Vehicle_Dynamics():
 
 
 class Car(Vehicle_Dynamics):
-    def __init__(self, conditions):
+    def __init__(self, conditions=[]):
         self.conditions = []
-        self.conditions.append(conditions)
+        self.conditions += conditions
 
 
     def move(self, ti, tf, acc_long, acc_lat, dt=0.1):
