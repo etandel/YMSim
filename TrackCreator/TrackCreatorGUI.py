@@ -252,6 +252,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def _load(self):
         pass
+#TODO: Finish this function
 #        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
 #        with open(fname) as f:
 #            for row in csv.reader(f):
