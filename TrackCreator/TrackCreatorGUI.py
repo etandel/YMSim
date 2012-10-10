@@ -7,10 +7,12 @@ import sys
 import csv
 
 from scipy import pi
-from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
+from PyQt4 import QtGui, QtCore
+from PyQt4.QtGui import QSlider
 
 from TrackCreator import tracks 
+from simulator.physics import Car
 from TrackCreator.drawcircuit import CircuitWidget
 
 class FloatEdit(QtGui.QLineEdit):
@@ -27,6 +29,7 @@ class FloatEdit(QtGui.QLineEdit):
         except ValueError:
             val = None
         return val
+
 
 class LogWindow(QtGui.QWidget):
     def __init__(self, logstring = ''):
@@ -52,6 +55,7 @@ class LogWindow(QtGui.QWidget):
 
     def append(self, logstr):
         self.log.append(logstr)
+
 
 class CircuitMenuButtons(QtGui.QWidget):
     def __init__(self, parent):
@@ -128,6 +132,7 @@ class CircuitMenuButtons(QtGui.QWidget):
         wind.circuit.remove_last()
         wind.circuit_draw.updateGL()
 
+
 class CircuitParamsWidget(QtGui.QGroupBox):
     def __init__(self, parent):
         super(CircuitParamsWidget, self).__init__(u'Opções', parent)
@@ -167,6 +172,7 @@ class CircuitParamsWidget(QtGui.QGroupBox):
     def width(self):
         return self._width_edit.value
 
+
 class CircuitMenuDock(QtGui.QWidget):
     def __init__(self, parent):
         super(CircuitMenuDock, self).__init__(parent)
@@ -197,6 +203,35 @@ class CircuitMenuDock(QtGui.QWidget):
         logwindow.append(logstr)
         self.window().statusBar().showMessage(logstr, 4000)
 
+
+class SimDock(QtGui.QWidget):
+    def __init__(self, parent):
+        super(SimDock, self).__init__(parent)
+        self._initUI(parent)
+
+    def _initUI(self, parent):
+        self._create_widgets()
+        self._design_layout()
+        self._describe_behavior()
+
+    def _create_widgets(self):
+        self.time_slider = QSlider(Qt.Horizontal, self)
+        self.time_slider.setTickInterval(1)
+        self.time_slider.setSliderPosition(self.time_slider.maximum())
+
+    def _design_layout(self):
+        main_layout = QtGui.QVBoxLayout()
+        map(main_layout.addWidget, self.children())
+        main_layout.insertSpacing(-1, 300)
+        self.setLayout(main_layout)
+
+    def _describe_behavior(self):
+        self.connect(self.time_slider, QtCore.SIGNAL('sliderMoved(int)'), self._slider_chaged)
+
+    def _slider_chaged(self, val):
+        self.window().draw_circuit.max_index = val
+
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -217,11 +252,23 @@ class MainWindow(QtGui.QMainWindow):
         self.circuit_draw = circuit_draw
 
         l_dock_area, r_dock_area = Qt.LeftDockWidgetArea , Qt.RightDockWidgetArea
-        circuit_menu = QtGui.QDockWidget('Circuit Menu', self)
-        circuit_menu.setAllowedAreas(l_dock_area | r_dock_area)
-        circuit_menu.setWidget(CircuitMenuDock(self))
-        self.addDockWidget(r_dock_area, circuit_menu)
+        allowed_areas = l_dock_area | r_dock_area
+        self.setDockOptions(self.AnimatedDocks | self.ForceTabbedDocks | self.VerticalTabs)
 
+        circuit_opts = self._create_dock_widget(allowed_areas, 'Circuit Creation', CircuitMenuDock)
+        sim_opts = self._create_dock_widget(allowed_areas, 'Simulation Menu', SimDock)
+
+        self.addDockWidget(r_dock_area, circuit_opts)
+        self.addDockWidget(r_dock_area, sim_opts)
+        self.tabifyDockWidget(sim_opts, circuit_opts)
+
+    def _create_dock_widget(self, allowed_areas, name, widget):
+        dock = QtGui.QDockWidget(name, self)
+        dock.setAllowedAreas(allowed_areas)
+        dock.setFeatures(dock.DockWidgetFeatures(dock.AllDockWidgetFeatures & ~dock.DockWidgetClosable))
+        dock.setWidget(widget(self))
+        return dock
+        
     def _create_menu(self):
         menu_bar = self.menuBar()
 
