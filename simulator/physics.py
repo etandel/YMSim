@@ -1,36 +1,22 @@
 #coding: UTF-8
+from collections import namedtuple
+
 import scipy as sp
 
 def euler(func_i, diff, dt = 0.1):
     return func_i + (diff)*dt
 
-class Position:
-    def __init__(self, X,Y):
-        self.X = X
-        self.Y = Y
+Position = namedtuple('Position', 'X Y')
 
-    def distance_to(self, position):
-        return sp.sqrt((position.X - self.X)**2 + (position.Y - self.Y)**2)
-
-    def __str__(self):
-        return '(%.3f, %.3f)' % (self.X, self.Y)
-
-
-class Condition:
+_ConditionBase = namedtuple('Condition', 'acc_max tau position psi  speed  omega  radius')
+class Condition(_ConditionBase):
     """
     Classe que armazena as condicoes atuais de um veiculo, que sao, em ordem:
     acc_max, tau, position=(0,0), psi=0, speed=0, radius=sp.inf.
     """
-
-    def __init__(self, acc_max, tau, position, psi = 0, speed = 0, omega = 0, radius = sp.inf):
-        self.position = position
-        self.speed = speed
-        self.acc_max = acc_max
-        self.tau = tau
-        self.radius = radius
-        self.psi = psi
-        self.omega = omega
-
+    def __new__(cls, acc_max, tau, position, psi=0, speed=0, omega=0, radius=sp.inf):
+        # add default values
+        return super(Move, cls).__new__(cls, acc_max, tau, position, psi, speed, omega, radius)
 
 class Vehicle_Dynamics():
     def __init__(self):
