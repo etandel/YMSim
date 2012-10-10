@@ -55,12 +55,13 @@ class Car(Vehicle_Dynamics):
     def __init__(self, init_conditions=[]):
         self.conditions = []
         self.conditions += init_conditions
+        self.i = len(self.conditions)
 
 
     def move(self, ti, tf, acc_long, acc_lat, dt=0.1):
         imax = (tf-ti)/dt
-        i = len(self.conditions)
+        i = self.i
         while i <= imax:
             self.conditions.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
             i += 1
-        
+

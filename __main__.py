@@ -342,6 +342,7 @@ class SimDock(QWidget):
     def _describe_behavior(self):
         pass
 
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -383,20 +384,24 @@ class MainWindow(QtGui.QMainWindow):
         menu_bar = self.menuBar()
 
         file_m = menu_bar.addMenu('&File')
-        file_m.addAction('&Load', self._load)
-        file_m.addAction('&Save', self._save)
+        circuit_io_m = file_m.addMenu('&Circuit')
+        circuit_io_m.addAction('&Load', self._load_circuit)
+        circuit_io_m.addAction('&Save', self._save_circuit)
+
+        sim_io_m = file_m.addMenu('&Simulation')
+        sim_io_m.addAction('&Load', self._load_sim)
+        sim_io_m.addAction('&Save', self._save_sim)
 
         view_m = menu_bar.addMenu('&View')
         logshort = QtGui.QKeySequence(Qt.Key_Control + Qt.Key_L)
         view_m.addAction('Log', self._show_log_window)
         
-        track_m = menu_bar.addMenu('&Track')
         help_m = menu_bar.addMenu('&Help')
 
     def _show_log_window(self):
         logwindow.show()
 
-    def _save(self):
+    def _save_circuit(self):
         fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
         with open(fname, 'w') as f:
             writer = csv.writer(f)
@@ -405,7 +410,13 @@ class MainWindow(QtGui.QMainWindow):
                 Y = str(track.position.Y)
                 writer.writerow((X,Y))
 
-    def _load(self):
+    def _load_circuit(self):
+        pass
+
+    def _save_sim(self):
+        pass
+
+    def _load_sim(self):
         pass
 
 #TODO: Finish this function
