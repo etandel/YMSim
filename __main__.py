@@ -11,10 +11,10 @@ from PyQt4.QtCore import Qt
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QSlider, QSpinBox
 
-from utils import val_from_percent, percent_from_val
 from TrackCreator import tracks 
 from simulator.physics import Car
 from TrackCreator.drawcircuit import CircuitWidget
+from utils import val_from_percent, percent_from_val
 
 
 class Controller(object):
@@ -262,6 +262,7 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         Controller.window = self
+        self.car = Car()
         self.circuit = tracks.Circuit()
         self.logstring = ''
         self._initUI()

@@ -18,49 +18,36 @@ class CircuitWidget(QGLWidget):
         '''
         Drawing routine
         '''
-        
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
 
-        # Draw the circuit as a line in 'immediate mode'
-        glBegin(GL_LINE_STRIP)
-        glColor(0.75, 0.75, 0.75)
-        for point in self.window().circuit:
-            glVertex(point.position.X, point.position.Y, 0.0)
-        glEnd()
-        
-        glBegin(GL_LINE_STRIP)
-        glColor(1.0, 0.0, 0.0)
-        for point in self.window().circuit.left:
-            glVertex(point.X, point.Y, 0.0)
-        glEnd()
+        glEnableClientState(GL_VERTEX_ARRAY)
+    
+        lines = [
+            #center strip
+            (
+                ((p.position.X, p.position.Y) for p in self.window().circuit),
+                (0.75, 0.75, 0.75)
+            ),
 
-        glBegin(GL_LINE_STRIP)
-        glColor(1.0, 0.0, 0.0)
-        for point in self.window().circuit.right:
-            glVertex(point.X, point.Y, 0.0)
-        glEnd()
+            #left margin
+            (
+                ((p.X, p.Y) for p in self.window().circuit.left),
+                (1.0, 0.0, 0.0),
+            ),
+            
+            #right margin
+            (
+                ((p.X, p.Y) for p in self.window().circuit.right),
+                (1.0, 0.0, 0.0),
+            ),
+        ]
+        for points_g, color in lines:
+            points_l = list(points_g)
+            glColor(*color)
+            glVertexPointerf(list(points_l))
+            glDrawArrays(GL_LINE_STRIP, 0, len(points_l))
 
-        ##########****#############
-
-#        glEnableClientState(GL_VERTEX_ARRAY)
-#        
-#        spiral_array = []
-#        
-#        # Second Spiral using "array immediate mode" (i.e. Vertex Arrays)
-#        radius = 0.8
-#        x = radius*math.sin(0)
-#        y = radius*math.cos(0)
-#        glColor(1.0, 0.0, 0.0)
-#        for deg in xrange(820):
-#            spiral_array.append([x, y])
-#            rad = math.radians(deg)
-#            radius -= 0.001
-#            x = radius*math.sin(rad)
-#            y = radius*math.cos(rad)
-#
-#        glVertexPointerf(spiral_array)
-#        glDrawArrays(GL_LINE_STRIP, 0, len(spiral_array))
         glFlush()
 
      def resizeGL(self, w, h):
