@@ -6,14 +6,6 @@ import scipy as sp
 
 from simulator.physics import Position
 
-def validate_float(input_val):
-    try:
-        value = float(input_val)
-    except:
-        value = None
-
-    return value
-
 constants = {
     'length': 0.1 , #meters
     'radius': 0.2 , #meters
@@ -101,7 +93,9 @@ class Circuit(list):
             self.append(_Straight_Track(length, width, orient, position))
         return TrackInfo(orient, position)
         
-    def create_curve(self, angle, radius, width):
+    def create_curve(self, angle, radius, width, rad=False):
+        if not rad: #angle parameter is not in radians
+            angle = angle * sp.pi/180.0 
         
         last_track = self[-1]
         #the following math is based on Mauro's matlab program
