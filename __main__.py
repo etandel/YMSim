@@ -3,16 +3,17 @@
 
 """GUI for circuit creation"""
 
+import os
 import sys
 import csv
 
-from scipy import pi
+import scipy as sp
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox
+from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox, QMessageBox
 
-from TrackCreator import tracks 
-from simulator.physics import Car
+from TrackCreator import tracks
+from simulator.physics import Car, Position
 from TrackCreator.drawcircuit import CircuitWidget
 from utils import val_from_percent, percent_from_val, sluggify
 
@@ -244,7 +245,7 @@ class CircuitMenuDock(QWidget):
 
         logstr = u'Adicionada ' + track_type + u' com posição inicial ' + unicode(last_track.position)
         logstr += u', posição final ' + unicode(new_track.position)
-        logstr += u' e orientação ' + unicode(circuit[-1].orient * 180/pi) + u'.\n'
+        logstr += u' e orientação ' + unicode(circuit[-1].orient * 180/sp.pi) + u'.\n'
         logwindow.append(logstr)
         self.window().statusBar().showMessage(logstr, 4000)
 
@@ -402,30 +403,29 @@ class MainWindow(QtGui.QMainWindow):
         logwindow.show()
 
     def _save_circuit(self):
-        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
-        with open(fname, 'w') as f:
-            writer = csv.writer(f)
-            for track in self.window().circuit:
-                X = str(track.position.X)
-                Y = str(track.position.Y)
-                writer.writerow((X,Y))
+        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
+        if fname:
+            with open(fname, 'w') as f:
+                writer = csv.writer(f)
+                for line in self.window().circuit.to_matrix():
+                    writer.writerow([str(param) for param in line])
 
     def _load_circuit(self):
-        pass
-
+        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
+        if fname:
+            try:
+                with open(fname) as f:
+                    track_list = [[float(param) for param in row] for row in csv.reader(f)]
+            except ValueError:
+                QMessageBox.critical(self, 'Erro!', u'Não foi possível carregar circuito. Arquivo mal formado.')
+            else:
+                self.circuit = tracks.Circuit(track_list, csv=True)
+            
     def _save_sim(self):
         pass
 
     def _load_sim(self):
         pass
-
-#TODO: Finish this function
-#        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
-#        with open(fname) as f:
-#            for row in csv.reader(f):
-#                X = float(row[0])
-#                Y = float(row[1])
-                
 
 app = QtGui.QApplication(sys.argv)
 wind = MainWindow(); wind.show()
