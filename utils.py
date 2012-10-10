@@ -1,4 +1,5 @@
 #coding: UTF-8
+import unicodedata
 from math import ceil
 
 def copy(self, dest):
@@ -24,3 +25,8 @@ def val_from_percent(percent, min_, max_):
 
 def percent_from_val(val, min_, max_):
     return (float(val - min_) / max_min) / 100.0
+
+def sluggify(s):
+    if not isinstance(s, unicode):
+        s = unicode(s)
+    return unicodedata.normalize('NFKD', s).encode('ASCII', 'ignore').replace(' ', '_').lower()

@@ -14,7 +14,7 @@ from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox
 from TrackCreator import tracks 
 from simulator.physics import Car
 from TrackCreator.drawcircuit import CircuitWidget
-from utils import val_from_percent, percent_from_val
+from utils import val_from_percent, percent_from_val, sluggify
 
 
 class Controller(object):
@@ -43,6 +43,38 @@ class FloatEdit(QtGui.QLineEdit):
             val = None
         return val
 
+class LabeledFloatEdit(QWidget):
+    def __init__(self, label_txt='', placeholder='', parent=None):
+        super(LabeledFloatEdit, self).__init__(parent)
+        self.label = QtGui.QLabel(label_txt, self)
+        self.edit = FloatEdit(placeholder, self)
+        main_layout = QtGui.QVBoxLayout()
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
+
+    @property
+    def value(self):
+        return self.edit.value
+        
+
+class TupleLabeledFloatEdit(QWidget):
+    def __init__(self, label_names, parent):
+        super(TupleLabeledFloatEdit, self).__init__(parent)
+        self.label_names = label_names
+        self._initUI(parent)
+
+    def _initUI(self, parent):
+        self._create_widgets()
+        self._design_layout()
+
+    def _create_widgets(self):
+        for name in self.label_names:
+            setattr(self, sluggify(name), LabeledFloatEdit(label_txt=name, parent=self))
+
+    def _design_layout(self):
+        main_layout = QtGui.QHBoxLayout()
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
 
 class LogWindow(QWidget):
     def __init__(self, logstring = ''):
@@ -217,6 +249,40 @@ class CircuitMenuDock(QWidget):
         self.window().statusBar().showMessage(logstr, 4000)
 
 
+class CarStatesWidget(QGroupBox):
+    def __init__(self, parent):
+        super(CarStatesWidget, self).__init__(u'Estado do Veículo', parent)
+        self._initUI()
+
+    def _initUI(self):
+        self._create_widgets()
+        self._design_layout()
+
+    def _create_widgets(self):
+        self._pos_edit = TupleLabeledFloatEdit(('X', 'Y'), self)
+        self._speed_edit = TupleLabeledFloatEdit(('Long', 'Lat'), self)
+        self._acc_edit = TupleLabeledFloatEdit(('Long', 'Lat'), self)
+
+    def _design_layout(self):
+        main_layout = QtGui.QFormLayout()
+        main_layout.addRow(u'Posição:', self._pos_edit)
+        main_layout.addRow(u'Velocidade:', self._speed_edit)
+        main_layout.addRow(u'Aceleração:', self._acc_edit)
+        self.setLayout(main_layout)
+
+    @property
+    def pos(self):
+        return self._pos_edit
+
+    @property
+    def speed(self):
+        return self._speed_edit
+
+    @property
+    def acc(self):
+        return self._acc_edit
+
+
 class TimeLineWidget(QGroupBox):
     def __init__(self, parent):
         super(TimeLineWidget, self).__init__('Linha do Tempo', parent)
@@ -265,6 +331,7 @@ class SimDock(QWidget):
 
     def _create_widgets(self):
         self.time_line = TimeLineWidget(self)
+        self.states = CarStatesWidget(self)
 
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
