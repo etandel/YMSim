@@ -9,7 +9,7 @@ import csv
 from scipy import pi
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QSlider, QSpinBox
+from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox
 
 from TrackCreator import tracks 
 from simulator.physics import Car
@@ -44,7 +44,7 @@ class FloatEdit(QtGui.QLineEdit):
         return val
 
 
-class LogWindow(QtGui.QWidget):
+class LogWindow(QWidget):
     def __init__(self, logstring = ''):
         super(LogWindow, self).__init__()
         self.logstring = logstring
@@ -70,7 +70,7 @@ class LogWindow(QtGui.QWidget):
         self.log.append(logstr)
 
 
-class CircuitMenuButtons(QtGui.QWidget):
+class CircuitMenuButtons(QWidget):
     def __init__(self, parent):
         super(CircuitMenuButtons, self).__init__(parent)
         self._initUI(parent)
@@ -117,7 +117,6 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_curve(angle, radius, width)
             self.parent().print_log(u'curva para a esquerda')
             self.window().circuit_draw.updateGL()
-        Controller.broadcast_change()
 
     def _do_straight(self):
         length = self.parent().options.length
@@ -126,7 +125,6 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_straight(length, width)
             self.parent().print_log(u'reta')
             self.window().circuit_draw.updateGL()
-        Controller.broadcast_change()
 
     def _do_right_turn(self):
         angle = self.parent().options.angle
@@ -136,22 +134,19 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_curve(-angle, radius, width)
             self.parent().print_log(u'curva para a direita')
             self.window().circuit_draw.updateGL()
-        Controller.broadcast_change()
 
     def _do_clear(self):
         circuit = tracks.Circuit() 
         self.window().circuit = circuit
         self.window().circuit_draw.updateGL()
-        Controller.broadcast_change()
 
     def _do_undo(self):
         wind = self.window()
         wind.circuit.remove_last()
         wind.circuit_draw.updateGL()
-        Controller.broadcast_change()
 
 
-class CircuitParamsWidget(QtGui.QGroupBox):
+class CircuitParamsWidget(QGroupBox):
     def __init__(self, parent):
         super(CircuitParamsWidget, self).__init__(u'Opções', parent)
         self._initUI()
@@ -191,7 +186,7 @@ class CircuitParamsWidget(QtGui.QGroupBox):
         return self._width_edit.value
 
 
-class CircuitMenuDock(QtGui.QWidget):
+class CircuitMenuDock(QWidget):
     def __init__(self, parent):
         super(CircuitMenuDock, self).__init__(parent)
         self._initUI(parent)
@@ -222,9 +217,9 @@ class CircuitMenuDock(QtGui.QWidget):
         self.window().statusBar().showMessage(logstr, 4000)
 
 
-class SimDock(QtGui.QWidget):
+class TimeLineWidget(QGroupBox):
     def __init__(self, parent):
-        super(SimDock, self).__init__(parent)
+        super(TimeLineWidget, self).__init__('Linha do Tempo', parent)
         self._initUI(parent)
 
     def _initUI(self, parent):
@@ -238,7 +233,38 @@ class SimDock(QtGui.QWidget):
         self.time_slider.setSliderPosition(self.time_slider.maximum())
 
         self.time_spinner = QSpinBox(self)
-        self.time_spinner.setRange(0, len(self.window().circuit))
+        self.time_spinner.setRange(*Controller.get_spinner_range())
+
+    def _design_layout(self):
+        main_layout = QtGui.QVBoxLayout()
+        map(main_layout.addWidget, self.children())
+        self.setLayout(main_layout)
+
+    def _describe_behavior(self):
+        self.connect(self.time_slider, QtCore.SIGNAL('sliderMoved(int)'), self._slider_changed)
+        self.connect(self.time_slider, QtCore.SIGNAL('valueChanged(int)'), self._slider_changed)
+
+        self.connect(self.time_spinner, QtCore.SIGNAL('valueChanged(int)'), self._spinner_changed)
+    
+    def _slider_changed(self, val):
+        self.time_spinner.setValue(val_from_percent(val, *Controller.get_spinner_range()))
+
+    def _spinner_changed(self, val):
+        self.window().circuit_draw.max_index = val
+
+
+class SimDock(QWidget):
+    def __init__(self, parent):
+        super(SimDock, self).__init__(parent)
+        self._initUI(parent)
+
+    def _initUI(self, parent):
+        self._create_widgets()
+        self._design_layout()
+        self._describe_behavior()
+
+    def _create_widgets(self):
+        self.time_line = TimeLineWidget(self)
 
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
@@ -247,16 +273,7 @@ class SimDock(QtGui.QWidget):
         self.setLayout(main_layout)
 
     def _describe_behavior(self):
-        self.connect(self.time_slider, QtCore.SIGNAL('sliderMoved(int)'), self._slider_changed)
-        self.connect(self.time_slider, QtCore.SIGNAL('valueChanged(int)'), self._slider_changed)
-
-        self.connect(self.time_spinner, QtCore.SIGNAL('valueChanged(int)'), self._spinner_changed)
-
-    def _slider_changed(self, val):
-        self.time_spinner.setValue(val_from_percent(val, *Controller.get_spinner_range()))
-
-    def _spinner_changed(self, val):
-        self.window().circuit_draw.max_index = val
+        pass
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):

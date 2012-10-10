@@ -9,18 +9,18 @@ def euler(func_i, diff, dt = 0.1):
 Position = namedtuple('Position', 'X Y')
 
 _ConditionBase = namedtuple('Condition', 'acc_max tau position psi  speed  omega  radius')
+
 class Condition(_ConditionBase):
     """
     Classe que armazena as condicoes atuais de um veiculo, que sao, em ordem:
     acc_max, tau, position=(0,0), psi=0, speed=0, radius=sp.inf.
     """
+
     def __new__(cls, acc_max, tau, position, psi=0, speed=0, omega=0, radius=sp.inf):
         # add default values
         return super(Move, cls).__new__(cls, acc_max, tau, position, psi, speed, omega, radius)
 
 class Vehicle_Dynamics():
-    def __init__(self):
-        pass
 
     def acc_long_trac(self, v, tau, acc_max):
         return acc_max - v/tau
@@ -34,7 +34,6 @@ class Vehicle_Dynamics():
     def get_speed(self, acc_long, conditions):
         ai = acc_long(conditions.speed, conditions.tau, conditions.acc_max)
         return euler(conditions.speed, ai) 
-
 
     def get_next_conditions(self, conds_i, acc_long_trac, acc_lat, dt = 0.1):
         speed = self.get_speed(acc_long_trac, conds_i)
@@ -53,14 +52,15 @@ class Vehicle_Dynamics():
 
 
 class Car(Vehicle_Dynamics):
-    def __init__(self, conditions=[]):
+    def __init__(self, init_conditions=[]):
         self.conditions = []
-        self.conditions += conditions
+        self.conditions += init_conditions
 
 
     def move(self, ti, tf, acc_long, acc_lat, dt=0.1):
-        tmax = (tf-ti)/dt
+        imax = (tf-ti)/dt
         i = len(self.conditions)
-        while i <= tmax:
+        while i <= imax:
             self.conditions.append(self.get_next_conditions(self.conditions[i-1], acc_long, acc_lat, dt))
             i += 1
+        

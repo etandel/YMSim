@@ -41,6 +41,12 @@ class CircuitWidget(QGLWidget):
                 ((p.X, p.Y) for p in self.window().circuit.right),
                 (1.0, 0.0, 0.0),
             ),
+            
+            #car trajectory
+            (
+                ((p.X, p.Y) for p in self.window().car.conditions[:self.max_index]),
+                (0.0, 0.0, 1.0),
+            ),
         ]
         for points_g, color in lines:
             points_l = list(points_g)
