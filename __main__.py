@@ -9,11 +9,24 @@ import csv
 from scipy import pi
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QSlider
+from PyQt4.QtGui import QSlider, QSpinBox
 
+from utils import val_from_percent, percent_from_val
 from TrackCreator import tracks 
 from simulator.physics import Car
 from TrackCreator.drawcircuit import CircuitWidget
+
+
+class Controller(object):
+
+    @classmethod
+    def broadcast_change(cls):
+        cls.window.sim_opts.widget().time_spinner.setRange(*cls.get_spinner_range())
+
+    @classmethod
+    def get_spinner_range(cls):
+        return (0, len(cls.window.circuit))
+
 
 class FloatEdit(QtGui.QLineEdit):
     def __init__(self, placeholder='', parent=None):
@@ -104,6 +117,7 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_curve(angle, radius, width)
             self.parent().print_log(u'curva para a esquerda')
             self.window().circuit_draw.updateGL()
+        Controller.broadcast_change()
 
     def _do_straight(self):
         length = self.parent().options.length
@@ -112,6 +126,7 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_straight(length, width)
             self.parent().print_log(u'reta')
             self.window().circuit_draw.updateGL()
+        Controller.broadcast_change()
 
     def _do_right_turn(self):
         angle = self.parent().options.angle
@@ -121,16 +136,19 @@ class CircuitMenuButtons(QtGui.QWidget):
             self.window().circuit.create_curve(-angle, radius, width)
             self.parent().print_log(u'curva para a direita')
             self.window().circuit_draw.updateGL()
+        Controller.broadcast_change()
 
     def _do_clear(self):
         circuit = tracks.Circuit() 
         self.window().circuit = circuit
         self.window().circuit_draw.updateGL()
+        Controller.broadcast_change()
 
     def _do_undo(self):
         wind = self.window()
         wind.circuit.remove_last()
         wind.circuit_draw.updateGL()
+        Controller.broadcast_change()
 
 
 class CircuitParamsWidget(QtGui.QGroupBox):
@@ -219,6 +237,9 @@ class SimDock(QtGui.QWidget):
         self.time_slider.setTickInterval(1)
         self.time_slider.setSliderPosition(self.time_slider.maximum())
 
+        self.time_spinner = QSpinBox(self)
+        self.time_spinner.setRange(0, len(self.window().circuit))
+
     def _design_layout(self):
         main_layout = QtGui.QVBoxLayout()
         map(main_layout.addWidget, self.children())
@@ -226,25 +247,29 @@ class SimDock(QtGui.QWidget):
         self.setLayout(main_layout)
 
     def _describe_behavior(self):
-        self.connect(self.time_slider, QtCore.SIGNAL('sliderMoved(int)'), self._slider_chaged)
+        self.connect(self.time_slider, QtCore.SIGNAL('sliderMoved(int)'), self._slider_changed)
+        self.connect(self.time_slider, QtCore.SIGNAL('valueChanged(int)'), self._slider_changed)
 
-    def _slider_chaged(self, val):
-        self.window().draw_circuit.max_index = val
+        self.connect(self.time_spinner, QtCore.SIGNAL('valueChanged(int)'), self._spinner_changed)
 
+    def _slider_changed(self, val):
+        self.time_spinner.setValue(val_from_percent(val, *Controller.get_spinner_range()))
+
+    def _spinner_changed(self, val):
+        self.window().circuit_draw.max_index = val
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        Controller.window = self
         self.circuit = tracks.Circuit()
         self.logstring = ''
         self._initUI()
-
 
     def _initUI(self):
         self.setWindowTitle('YMCircuit')
         self._create_menu()
         self._create_widgets()
-
 
     def _create_widgets(self):
         circuit_draw = CircuitWidget(self)
@@ -255,12 +280,12 @@ class MainWindow(QtGui.QMainWindow):
         allowed_areas = l_dock_area | r_dock_area
         self.setDockOptions(self.AnimatedDocks | self.ForceTabbedDocks | self.VerticalTabs)
 
-        circuit_opts = self._create_dock_widget(allowed_areas, 'Circuit Creation', CircuitMenuDock)
-        sim_opts = self._create_dock_widget(allowed_areas, 'Simulation Menu', SimDock)
+        self.circuit_opts = self._create_dock_widget(allowed_areas, 'Circuit Creation', CircuitMenuDock)
+        self.sim_opts = self._create_dock_widget(allowed_areas, 'Simulation Menu', SimDock)
 
-        self.addDockWidget(r_dock_area, circuit_opts)
-        self.addDockWidget(r_dock_area, sim_opts)
-        self.tabifyDockWidget(sim_opts, circuit_opts)
+        self.addDockWidget(r_dock_area, self.circuit_opts)
+        self.addDockWidget(r_dock_area, self.sim_opts)
+        self.tabifyDockWidget(self.sim_opts, self.circuit_opts)
 
     def _create_dock_widget(self, allowed_areas, name, widget):
         dock = QtGui.QDockWidget(name, self)
@@ -297,6 +322,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def _load(self):
         pass
+
 #TODO: Finish this function
 #        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', '/home/echobravo/Misc', 'CSV Files (*.csv )')
 #        with open(fname) as f:

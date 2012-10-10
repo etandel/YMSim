@@ -12,6 +12,7 @@ class CircuitWidget(QGLWidget):
     
      def __init__(self, parent):
         QGLWidget.__init__(self, parent)
+        self.max_index = 99
 
      def paintGL(self):
         '''

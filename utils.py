@@ -1,4 +1,6 @@
 #coding: UTF-8
+from math import ceil
+
 def copy(self, dest):
         dest.position = self.position
         dest.speed = self.speed
@@ -17,3 +19,8 @@ def frange(initial, final, step):
 def is_valid_input(val, expected):
 	return type(val) == expected
 
+def val_from_percent(percent, min_, max_):
+    return int(ceil(min_ + (max_ - min_) * (percent / 100.0)))
+
+def percent_from_val(val, min_, max_):
+    return (float(val - min_) / max_min) / 100.0
