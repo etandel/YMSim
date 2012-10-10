@@ -10,7 +10,8 @@ import csv
 import scipy as sp
 from PyQt4.QtCore import Qt
 from PyQt4 import QtGui, QtCore
-from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox, QMessageBox
+from PyQt4.QtGui import QWidget, QSlider, QSpinBox, QGroupBox
+from PyQt4.QtGui import QMessageBox, QFileDialog
 
 from TrackCreator import tracks
 from simulator.physics import Car, Position
@@ -403,7 +404,7 @@ class MainWindow(QtGui.QMainWindow):
         logwindow.show()
 
     def _save_circuit(self):
-        fname = QtGui.QFileDialog.getSaveFileName(self, 'Save Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
+        fname = QFileDialog.getSaveFileName(self, 'Save Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
         if fname:
             with open(fname, 'w') as f:
                 writer = csv.writer(f)
@@ -411,7 +412,7 @@ class MainWindow(QtGui.QMainWindow):
                     writer.writerow([str(param) for param in line])
 
     def _load_circuit(self):
-        fname = QtGui.QFileDialog.getOpenFileName(self, 'Open Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
+        fname = QFileDialog.getOpenFileName(self, 'Open Circuit', os.path.expanduser('~'), 'CSV Files (*.csv )')
         if fname:
             try:
                 with open(fname) as f:
@@ -422,10 +423,15 @@ class MainWindow(QtGui.QMainWindow):
                 self.circuit = tracks.Circuit(track_list, csv=True)
             
     def _save_sim(self):
-        pass
+        fname = QFileDialog.getSaveFileName(self, 'Save Simulation', os.path.expanduser('~'), 'CSV Files (*.csv )')
+        if fname:
+            with open(fname, 'w') as f:
+                writer = csv.writer(f)
+                for line in self.window().car.conditions:
+                    writer.writerow([str(param) for param in line])
 
     def _load_sim(self):
-        pass
+        fname = QFileDialog.getSaveFileName(self, 'Load Simulation', os.path.expanduser('~'), 'CSV Files (*.csv )')
 
 app = QtGui.QApplication(sys.argv)
 wind = MainWindow(); wind.show()
